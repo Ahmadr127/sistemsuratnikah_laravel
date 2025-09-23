@@ -26,6 +26,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/marriage/create-form', [AdminController::class, 'createMarriageForm'])->name('marriage.create-form');
     Route::post('/marriage/store', [AdminController::class, 'storeMarriage'])->name('marriage.store');
 
+    // KTP Data Management
+    Route::get('/ktp-data', [AdminController::class, 'ktpData'])->name('ktp-data');
+    Route::post('/ktp-search', [AdminController::class, 'searchKtp'])->name('ktp-search');
+
     // Home Settings
     Route::get('/home-settings', [AdminHomeSettingController::class, 'edit'])->name('home-settings.edit');
     Route::put('/home-settings', [AdminHomeSettingController::class, 'update'])->name('home-settings.update');
