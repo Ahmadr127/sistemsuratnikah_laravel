@@ -194,12 +194,17 @@
                             </a>
                         </div>
                         <div class="col-md-3">
+                            <a href="{{ route('admin.ktp-data') }}" class="btn btn-outline-warning w-100">
+                                <i class="fas fa-id-card me-2"></i>Data KTP
+                            </a>
+                        </div>
+                        <div class="col-md-3">
                             <a href="{{ route('admin.home-settings.edit') }}" class="btn btn-outline-info w-100">
                                 <i class="fas fa-cog me-2"></i>Home Settings
                             </a>
                         </div>
                         <div class="col-md-3">
-                            <a href="#" class="btn btn-outline-warning w-100">
+                            <a href="#" class="btn btn-outline-secondary w-100">
                                 <i class="fas fa-chart-bar me-2"></i>Reports
                             </a>
                         </div>

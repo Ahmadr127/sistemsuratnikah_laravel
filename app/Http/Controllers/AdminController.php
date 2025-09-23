@@ -5,14 +5,19 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Marriage;
+use App\Models\KtpData;
+use App\Services\KtpApiService;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Http;
 
 class AdminController extends Controller
 {
-    public function __construct()
+    protected $ktpApiService;
+
+    public function __construct(KtpApiService $ktpApiService)
     {
         $this->middleware('admin');
+        $this->ktpApiService = $ktpApiService;
     }
 
     public function dashboard()
@@ -51,7 +56,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Search NIK for marriage verification
+     * Search NIK for marriage verification using KTP API
      */
     public function searchNik(Request $request)
     {
@@ -78,40 +83,61 @@ class AdminController extends Controller
         $brideNik = $request->input('bride_nik');
 
         try {
-            // TODO: Implement actual API call to NIK verification endpoint
-            // For now, we'll simulate the API response structure
-            
-            // Simulate API call (replace with actual endpoint when ready)
-            $groomData = $this->simulateNikApiCall($groomNik);
-            $brideData = $this->simulateNikApiCall($brideNik);
+            // Get KTP data from API
+            $groomApiResponse = $this->ktpApiService->getKtpByNik($groomNik);
+            $brideApiResponse = $this->ktpApiService->getKtpByNik($brideNik);
 
-            // Check if both NIKs are valid
-            if ($groomData['valid'] && $brideData['valid']) {
-                // Store the data in session for the next step
-                session([
-                    'marriage_data' => [
-                        'groom' => $groomData['data'],
-                        'bride' => $brideData['data'],
-                        'groom_nik' => $groomNik,
-                        'bride_nik' => $brideNik,
-                    ]
-                ]);
-
-                return redirect()->route('admin.marriage.create-form')
-                    ->with('success', 'Data NIK berhasil diverifikasi. Silakan lengkapi informasi pernikahan.');
-            } else {
+            // Check if both API calls were successful
+            if (!$groomApiResponse['success'] || !$brideApiResponse['success']) {
                 $errors = [];
-                if (!$groomData['valid']) {
-                    $errors['groom_nik'] = $groomData['message'] ?? 'NIK calon pengantin pria tidak valid.';
+                if (!$groomApiResponse['success']) {
+                    $errors['groom_nik'] = $groomApiResponse['message'];
                 }
-                if (!$brideData['valid']) {
-                    $errors['bride_nik'] = $brideData['message'] ?? 'NIK calon pengantin wanita tidak valid.';
+                if (!$brideApiResponse['success']) {
+                    $errors['bride_nik'] = $brideApiResponse['message'];
                 }
 
                 return redirect()->back()
                     ->withErrors($errors)
                     ->withInput();
             }
+
+            // Validate KTP data for marriage eligibility
+            $groomValidation = $this->ktpApiService->validateKtpForMarriage($groomApiResponse['data']);
+            $brideValidation = $this->ktpApiService->validateKtpForMarriage($brideApiResponse['data']);
+
+            if (!$groomValidation['valid'] || !$brideValidation['valid']) {
+                $errors = [];
+                if (!$groomValidation['valid']) {
+                    $errors['groom_nik'] = $groomValidation['message'];
+                }
+                if (!$brideValidation['valid']) {
+                    $errors['bride_nik'] = $brideValidation['message'];
+                }
+
+                return redirect()->back()
+                    ->withErrors($errors)
+                    ->withInput();
+            }
+
+            // Format data for marriage form
+            $groomData = $this->ktpApiService->formatKtpForMarriage($groomApiResponse['data']);
+            $brideData = $this->ktpApiService->formatKtpForMarriage($brideApiResponse['data']);
+
+            // Store the data in session for the next step
+            session([
+                'marriage_data' => [
+                    'groom' => $groomData,
+                    'bride' => $brideData,
+                    'groom_nik' => $groomNik,
+                    'bride_nik' => $brideNik,
+                    'groom_ktp_data' => $groomApiResponse['data'],
+                    'bride_ktp_data' => $brideApiResponse['data'],
+                ]
+            ]);
+
+            return redirect()->route('admin.marriage.create-form')
+                ->with('success', 'Data NIK berhasil diverifikasi melalui API KTP. Silakan lengkapi informasi pernikahan.');
 
         } catch (\Exception $e) {
             return redirect()->back()
@@ -205,53 +231,58 @@ class AdminController extends Controller
     }
 
     /**
-     * Simulate NIK API call (replace with actual implementation)
+     * Show all KTP data from API
      */
-    private function simulateNikApiCall($nik)
+    public function ktpData()
     {
-        // TODO: Replace this with actual API call to NIK verification endpoint
-        // Example structure for when the API is ready:
-        /*
         try {
-            $response = Http::timeout(30)->post('your-nik-api-endpoint', [
-                'nik' => $nik
-            ]);
-
-            if ($response->successful()) {
-                $data = $response->json();
-                return [
-                    'valid' => $data['status'] === 'success',
-                    'data' => $data['data'] ?? null,
-                    'message' => $data['message'] ?? null
-                ];
+            $apiResponse = $this->ktpApiService->getAllKtp();
+            
+            if ($apiResponse['success']) {
+                $ktpData = $apiResponse['data'] ?? [];
+                $total = $apiResponse['total'] ?? 0;
+                
+                // Ensure ktpData is an array
+                if (!is_array($ktpData)) {
+                    $ktpData = [];
+                }
             } else {
-                return [
-                    'valid' => false,
-                    'data' => null,
-                    'message' => 'Gagal memverifikasi NIK'
-                ];
+                $ktpData = [];
+                $total = 0;
+                session()->flash('error', $apiResponse['message'] ?? 'Gagal mengambil data KTP');
             }
         } catch (\Exception $e) {
-            return [
-                'valid' => false,
-                'data' => null,
-                'message' => 'Terjadi kesalahan saat memverifikasi NIK'
-            ];
+            $ktpData = [];
+            $total = 0;
+            session()->flash('error', 'Terjadi kesalahan saat mengambil data KTP: ' . $e->getMessage());
         }
-        */
 
-        // Temporary simulation for development
-        return [
-            'valid' => true,
-            'data' => [
-                'nik' => $nik,
-                'name' => 'Data Simulasi - ' . substr($nik, -4),
-                'birth_date' => '1990-01-01',
-                'birth_place' => 'Jakarta',
-                'address' => 'Alamat Simulasi',
-                'gender' => $nik[6] % 2 == 0 ? 'Perempuan' : 'Laki-laki',
-            ],
-            'message' => 'Data berhasil diverifikasi (simulasi)'
-        ];
+        return view('admin.ktp-data', compact('ktpData', 'total'));
+    }
+
+    /**
+     * Search KTP by NIK
+     */
+    public function searchKtp(Request $request)
+    {
+        $request->validate([
+            'nik' => 'required|string|size:16|regex:/^\d{16}$/',
+        ], [
+            'nik.required' => 'NIK wajib diisi.',
+            'nik.size' => 'NIK harus 16 digit.',
+            'nik.regex' => 'NIK harus berupa angka.',
+        ]);
+
+        $nik = $request->input('nik');
+        $apiResponse = $this->ktpApiService->getKtpByNik($nik);
+
+        if ($apiResponse['success']) {
+            $ktpData = $apiResponse['data'];
+            return view('admin.ktp-detail', compact('ktpData'));
+        } else {
+            return redirect()->back()
+                ->withErrors(['nik' => $apiResponse['message']])
+                ->withInput();
+        }
     }
 }

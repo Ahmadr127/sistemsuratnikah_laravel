@@ -60,7 +60,7 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Tanggal Lahir</label>
-                                <input type="text" class="form-control" value="{{ $marriageData['groom']['birth_date'] }}" readonly>
+                                <input type="text" class="form-control" value="{{ \Carbon\Carbon::parse($marriageData['groom']['birth_date'])->format('d F Y') }}" readonly>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -69,10 +69,34 @@
                                 <input type="text" class="form-control" value="{{ $marriageData['groom']['birth_place'] }}" readonly>
                             </div>
                         </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Jenis Kelamin</label>
+                                <input type="text" class="form-control" value="{{ $marriageData['groom']['gender'] }}" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Agama</label>
+                                <input type="text" class="form-control" value="{{ $marriageData['groom']['religion'] }}" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Pekerjaan</label>
+                                <input type="text" class="form-control" value="{{ $marriageData['groom']['occupation'] }}" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Status Perkawinan</label>
+                                <input type="text" class="form-control" value="{{ $marriageData['groom']['marital_status'] }}" readonly>
+                            </div>
+                        </div>
                         <div class="col-12">
                             <div class="mb-3">
-                                <label class="form-label fw-bold">Alamat</label>
-                                <textarea class="form-control" rows="2" readonly>{{ $marriageData['groom']['address'] }}</textarea>
+                                <label class="form-label fw-bold">Alamat Lengkap</label>
+                                <textarea class="form-control" rows="3" readonly>{{ $marriageData['groom']['address'] }}, {{ $marriageData['groom']['village'] }}, {{ $marriageData['groom']['district'] }}, {{ $marriageData['groom']['city'] }}, {{ $marriageData['groom']['province'] }} {{ $marriageData['groom']['postal_code'] }}</textarea>
                             </div>
                         </div>
                     </div>
@@ -99,7 +123,7 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label class="form-label fw-bold">Tanggal Lahir</label>
-                                <input type="text" class="form-control" value="{{ $marriageData['bride']['birth_date'] }}" readonly>
+                                <input type="text" class="form-control" value="{{ \Carbon\Carbon::parse($marriageData['bride']['birth_date'])->format('d F Y') }}" readonly>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -108,10 +132,34 @@
                                 <input type="text" class="form-control" value="{{ $marriageData['bride']['birth_place'] }}" readonly>
                             </div>
                         </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Jenis Kelamin</label>
+                                <input type="text" class="form-control" value="{{ $marriageData['bride']['gender'] }}" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Agama</label>
+                                <input type="text" class="form-control" value="{{ $marriageData['bride']['religion'] }}" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Pekerjaan</label>
+                                <input type="text" class="form-control" value="{{ $marriageData['bride']['occupation'] }}" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Status Perkawinan</label>
+                                <input type="text" class="form-control" value="{{ $marriageData['bride']['marital_status'] }}" readonly>
+                            </div>
+                        </div>
                         <div class="col-12">
                             <div class="mb-3">
-                                <label class="form-label fw-bold">Alamat</label>
-                                <textarea class="form-control" rows="2" readonly>{{ $marriageData['bride']['address'] }}</textarea>
+                                <label class="form-label fw-bold">Alamat Lengkap</label>
+                                <textarea class="form-control" rows="3" readonly>{{ $marriageData['bride']['address'] }}, {{ $marriageData['bride']['village'] }}, {{ $marriageData['bride']['district'] }}, {{ $marriageData['bride']['city'] }}, {{ $marriageData['bride']['province'] }} {{ $marriageData['bride']['postal_code'] }}</textarea>
                             </div>
                         </div>
                     </div>
