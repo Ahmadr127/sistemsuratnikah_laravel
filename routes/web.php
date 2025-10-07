@@ -10,8 +10,13 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 
 // Authentication Routes
-Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
+Route::middleware('guest')->group(function () {
+    Route::get('/login', function () { return view('auth.auth'); })->name('login');
+    Route::get('/register', function () { return view('auth.auth'); })->name('register');
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/register', [AuthController::class, 'register']);
+});
+
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Admin Routes
