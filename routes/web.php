@@ -5,6 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminHomeSettingController;
+use App\Http\Controllers\MarriageController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -18,6 +19,13 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// User Marriage Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/marriage/request', [MarriageController::class, 'showRequestForm'])->name('marriage.request');
+    Route::post('/marriage/request', [MarriageController::class, 'submitRequest'])->name('marriage.submit');
+    Route::get('/marriage/status', [MarriageController::class, 'status'])->name('marriage.status');
+});
 
 // Admin Routes
 Route::prefix('admin')->name('admin.')->group(function () {

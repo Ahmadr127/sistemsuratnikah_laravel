@@ -238,6 +238,17 @@
                                         <i class="fas fa-chart-line w-5 mr-3 text-gray-400"></i>
                                         <span>Dashboard</span>
                                     </a>
+                                    @else
+                                    <a href="{{ route('marriage.request') }}"
+                                        class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                                        <i class="fas fa-file-signature w-5 mr-3 text-gray-400"></i>
+                                        <span>Pengajuan Buku Nikah</span>
+                                    </a>
+                                    <a href="{{ route('marriage.status') }}"
+                                        class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                                        <i class="fas fa-clipboard-list w-5 mr-3 text-gray-400"></i>
+                                        <span>Status Pengajuan</span>
+                                    </a>
                                     @endif
                                 </div>
 
