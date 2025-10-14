@@ -46,14 +46,14 @@
                             <form method="POST" action="{{ route('login') }}" class="space-y-6">
                                 @csrf
                                 <div>
-                                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                                    <label for="email" class="block text-sm font-medium text-gray-700">Email / Username</label>
                                     <div class="mt-1 relative">
                                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center">
-                                            <i class="fas fa-envelope text-gray-400"></i>
+                                            <i class="fas fa-user text-gray-400"></i>
                                         </span>
-                                        <input type="email" name="email" id="email" required 
+                                        <input type="text" name="email" id="email" required 
                                                class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-secondary"
-                                               value="{{ old('email') }}" placeholder="nama@example.com">
+                                               value="{{ old('email') }}" placeholder="Masukkan email atau username">
                                     </div>
                                 </div>
                                 <div>
