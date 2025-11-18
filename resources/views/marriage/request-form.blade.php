@@ -8,6 +8,12 @@
         <div class="bg-white rounded-xl shadow-lg p-6">
             <h1 class="text-2xl font-bold text-gray-900 mb-6">Formulir Pengajuan Buku Nikah</h1>
 
+            @if(session('success'))
+            <div class="mb-4 p-4 rounded-xl bg-green-50 border-l-4 border-green-500">
+                <p class="text-sm text-green-700">{{ session('success') }}</p>
+            </div>
+            @endif
+
             @if ($errors->any())
             <div class="mb-4 p-4 rounded-xl bg-red-50 border-l-4 border-red-500">
                 <div class="flex">
@@ -25,7 +31,36 @@
                 </div>
             </div>
             @endif
+            <!-- Step 1: Verifikasi NIK melalui API KTP -->
+            <div class="bg-gray-50 p-4 rounded-lg mb-6">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Verifikasi NIK</h2>
+                <form action="{{ route('marriage.search-nik') }}" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    @csrf
+                    <div>
+                        <label for="groom_nik" class="block text-sm font-medium text-gray-700">NIK Calon Pengantin Pria</label>
+                        <input type="text" name="groom_nik" id="groom_nik" pattern="[0-9]{16}" title="NIK harus 16 digit angka"
+                               class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-secondary focus:ring focus:ring-secondary focus:ring-opacity-50"
+                               value="{{ old('groom_nik', $prefill['groom']['nik'] ?? '') }}">
+                        @error('groom_nik')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div>
+                        <label for="bride_nik" class="block text-sm font-medium text-gray-700">NIK Calon Pengantin Wanita</label>
+                        <input type="text" name="bride_nik" id="bride_nik" pattern="[0-9]{16}" title="NIK harus 16 digit angka"
+                               class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-secondary focus:ring focus:ring-secondary focus:ring-opacity-50"
+                               value="{{ old('bride_nik', $prefill['bride']['nik'] ?? '') }}">
+                        @error('bride_nik')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div class="md:col-span-2 flex justify-end">
+                        <button type="submit" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90">Verifikasi NIK</button>
+                    </div>
+                </form>
+            </div>
 
+            <!-- Step 2: Lengkapi dan submit pengajuan -->
             <form action="{{ route('marriage.submit') }}" method="POST" class="space-y-6">
                 @csrf
 
@@ -37,13 +72,30 @@
                             <label for="groom_name" class="block text-sm font-medium text-gray-700">Nama Lengkap</label>
                             <input type="text" name="groom_name" id="groom_name" required
                                 class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-secondary focus:ring focus:ring-secondary focus:ring-opacity-50"
-                                value="{{ old('groom_name') }}">
+                                value="{{ old('groom_name', $prefill['groom']['name'] ?? '') }}">
                         </div>
                         <div>
-                            <label for="groom_nik" class="block text-sm font-medium text-gray-700">NIK</label>
-                            <input type="text" name="groom_nik" id="groom_nik" required
+                            <label for="groom_nik_submit" class="block text-sm font-medium text-gray-700">NIK</label>
+                            <input type="text" name="groom_nik" id="groom_nik_submit" required
                                 class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-secondary focus:ring focus:ring-secondary focus:ring-opacity-50"
-                                value="{{ old('groom_nik') }}" pattern="[0-9]{16}" title="NIK harus 16 digit angka">
+                                value="{{ old('groom_nik', $prefill['groom']['nik'] ?? '') }}" pattern="[0-9]{16}" title="NIK harus 16 digit angka">
+                        </div>
+                        <div>
+                            <label for="groom_birth_place" class="block text-sm font-medium text-gray-700">Tempat Lahir</label>
+                            <input type="text" name="groom_birth_place" id="groom_birth_place" required
+                                class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-secondary focus:ring focus:ring-secondary focus:ring-opacity-50"
+                                value="{{ old('groom_birth_place', $prefill['groom']['birth_place'] ?? '') }}">
+                        </div>
+                        <div>
+                            <label for="groom_birth_date" class="block text-sm font-medium text-gray-700">Tanggal Lahir</label>
+                            <input type="date" name="groom_birth_date" id="groom_birth_date" required
+                                class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-secondary focus:ring focus:ring-secondary focus:ring-opacity-50"
+                                value="{{ old('groom_birth_date', isset($prefill['groom']['birth_date']) ? \Illuminate\Support\Carbon::parse($prefill['groom']['birth_date'])->format('Y-m-d') : '') }}">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label for="groom_address" class="block text-sm font-medium text-gray-700">Alamat</label>
+                            <textarea name="groom_address" id="groom_address" required rows="3"
+                                class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-secondary focus:ring focus:ring-secondary focus:ring-opacity-50">{{ old('groom_address', $prefill['groom']['address'] ?? '') }}</textarea>
                         </div>
                     </div>
                 </div>
@@ -56,13 +108,30 @@
                             <label for="bride_name" class="block text-sm font-medium text-gray-700">Nama Lengkap</label>
                             <input type="text" name="bride_name" id="bride_name" required
                                 class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-secondary focus:ring focus:ring-secondary focus:ring-opacity-50"
-                                value="{{ old('bride_name') }}">
+                                value="{{ old('bride_name', $prefill['bride']['name'] ?? '') }}">
                         </div>
                         <div>
-                            <label for="bride_nik" class="block text-sm font-medium text-gray-700">NIK</label>
-                            <input type="text" name="bride_nik" id="bride_nik" required
+                            <label for="bride_nik_submit" class="block text-sm font-medium text-gray-700">NIK</label>
+                            <input type="text" name="bride_nik" id="bride_nik_submit" required
                                 class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-secondary focus:ring focus:ring-secondary focus:ring-opacity-50"
-                                value="{{ old('bride_nik') }}" pattern="[0-9]{16}" title="NIK harus 16 digit angka">
+                                value="{{ old('bride_nik', $prefill['bride']['nik'] ?? '') }}" pattern="[0-9]{16}" title="NIK harus 16 digit angka">
+                        </div>
+                        <div>
+                            <label for="bride_birth_place" class="block text-sm font-medium text-gray-700">Tempat Lahir</label>
+                            <input type="text" name="bride_birth_place" id="bride_birth_place" required
+                                class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-secondary focus:ring focus:ring-secondary focus:ring-opacity-50"
+                                value="{{ old('bride_birth_place', $prefill['bride']['birth_place'] ?? '') }}">
+                        </div>
+                        <div>
+                            <label for="bride_birth_date" class="block text-sm font-medium text-gray-700">Tanggal Lahir</label>
+                            <input type="date" name="bride_birth_date" id="bride_birth_date" required
+                                class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-secondary focus:ring focus:ring-secondary focus:ring-opacity-50"
+                                value="{{ old('bride_birth_date', isset($prefill['bride']['birth_date']) ? \Illuminate\Support\Carbon::parse($prefill['bride']['birth_date'])->format('Y-m-d') : '') }}">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label for="bride_address" class="block text-sm font-medium text-gray-700">Alamat</label>
+                            <textarea name="bride_address" id="bride_address" required rows="3"
+                                class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-secondary focus:ring focus:ring-secondary focus:ring-opacity-50">{{ old('bride_address', $prefill['bride']['address'] ?? '') }}</textarea>
                         </div>
                     </div>
                 </div>
@@ -79,11 +148,23 @@
                                 value="{{ old('marriage_date') }}">
                         </div>
                         <div>
-                            <label for="marriage_location" class="block text-sm font-medium text-gray-700">Lokasi
+                            <label for="marriage_place" class="block text-sm font-medium text-gray-700">Tempat
                                 Pernikahan</label>
-                            <input type="text" name="marriage_location" id="marriage_location" required
+                            <input type="text" name="marriage_place" id="marriage_place" required
                                 class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-secondary focus:ring focus:ring-secondary focus:ring-opacity-50"
-                                value="{{ old('marriage_location') }}">
+                                value="{{ old('marriage_place') }}">
+                        </div>
+                        <div>
+                            <label for="witness1_name" class="block text-sm font-medium text-gray-700">Nama Saksi 1</label>
+                            <input type="text" name="witness1_name" id="witness1_name" required
+                                class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-secondary focus:ring focus:ring-secondary focus:ring-opacity-50"
+                                value="{{ old('witness1_name') }}">
+                        </div>
+                        <div>
+                            <label for="witness2_name" class="block text-sm font-medium text-gray-700">Nama Saksi 2</label>
+                            <input type="text" name="witness2_name" id="witness2_name" required
+                                class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-secondary focus:ring focus:ring-secondary focus:ring-opacity-50"
+                                value="{{ old('witness2_name') }}">
                         </div>
                     </div>
                 </div>
@@ -102,4 +183,33 @@
         </div>
     </div>
 </div>
+
 @endsection
+
+@push('scripts')
+<script>
+    const nikRegex = /^[0-9]{16}$/;
+    const nikInput = document.getElementById('groom_nik');
+    const nikSubmitInput = document.getElementById('groom_nik_submit');
+    const brideNikInput = document.getElementById('bride_nik');
+    const brideNikSubmitInput = document.getElementById('bride_nik_submit');
+
+    nikInput.addEventListener('input', (e) => {
+        const nik = e.target.value;
+        if (nikRegex.test(nik)) {
+            nikSubmitInput.disabled = false;
+        } else {
+            nikSubmitInput.disabled = true;
+        }
+    });
+
+    brideNikInput.addEventListener('input', (e) => {
+        const nik = e.target.value;
+        if (nikRegex.test(nik)) {
+            brideNikSubmitInput.disabled = false;
+        } else {
+            brideNikSubmitInput.disabled = true;
+        }
+    });
+</script>
+@endpush

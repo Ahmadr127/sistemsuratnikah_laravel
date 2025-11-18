@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    // KTP API service configuration
+    'ktp_api' => [
+        'base_url' => env('KTP_API_BASE_URL', 'https://ktp.chasouluix.biz.id/api/ktp'),
+        'timeout' => env('KTP_API_TIMEOUT', 30),
+    ],
+
 ];

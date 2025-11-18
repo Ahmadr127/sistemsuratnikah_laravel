@@ -12,8 +12,9 @@ class KtpApiService
 
     public function __construct()
     {
-        $this->baseUrl = 'https://ktp.chasouluix.biz.id/api/ktp';
-        $this->timeout = 30;
+        // Load from config/env for flexibility
+        $this->baseUrl = rtrim(config('services.ktp_api.base_url', env('KTP_API_BASE_URL', 'https://ktp.chasouluix.biz.id/api/ktp')), '/');
+        $this->timeout = (int) config('services.ktp_api.timeout', (int) env('KTP_API_TIMEOUT', 30));
     }
 
     /**

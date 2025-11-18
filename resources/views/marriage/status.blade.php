@@ -63,16 +63,19 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                    @if($marriage->status === 'approved') bg-green-100 text-green-800
-                                    @elseif($marriage->status === 'rejected') bg-red-100 text-red-800
-                                    @else bg-yellow-100 text-yellow-800
+                                    @if($marriage->status === 'active') bg-green-100 text-green-800
+                                    @elseif($marriage->status === 'inactive') bg-yellow-100 text-yellow-800
+                                    @elseif($marriage->status === 'cancelled') bg-red-100 text-red-800
+                                    @else bg-gray-100 text-gray-800
                                     @endif">
-                                    @if($marriage->status === 'approved')
-                                        <i class="fas fa-check-circle mr-1"></i> Disetujui
-                                    @elseif($marriage->status === 'rejected')
-                                        <i class="fas fa-times-circle mr-1"></i> Ditolak
+                                    @if($marriage->status === 'active')
+                                        <i class="fas fa-check-circle mr-1"></i> Aktif
+                                    @elseif($marriage->status === 'inactive')
+                                        <i class="fas fa-pause-circle mr-1"></i> Nonaktif
+                                    @elseif($marriage->status === 'cancelled')
+                                        <i class="fas fa-times-circle mr-1"></i> Dibatalkan
                                     @else
-                                        <i class="fas fa-clock mr-1"></i> Menunggu
+                                        <i class="fas fa-info-circle mr-1"></i> Tidak Diketahui
                                     @endif
                                 </span>
                             </td>

@@ -73,6 +73,9 @@
                                                class="h-4 w-4 text-secondary focus:ring-secondary border-gray-300 rounded">
                                         <label for="remember" class="ml-2 block text-sm text-gray-700">Ingat saya</label>
                                     </div>
+                                    <div>
+                                        <a href="{{ route('forgot.password') }}" class="text-sm text-secondary hover:underline">Lupa password?</a>
+                                    </div>
                                 </div>
                                 <button type="submit" 
                                         class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-secondary hover:bg-secondary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary transition duration-200">
@@ -134,6 +137,17 @@
                                         <input type="text" name="name" id="name" required 
                                                class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-secondary"
                                                value="{{ old('name') }}" placeholder="Masukkan nama lengkap">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                                    <div class="mt-1 relative">
+                                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                                            <i class="fas fa-at text-gray-400"></i>
+                                        </span>
+                                        <input type="text" name="username" id="username" required 
+                                               class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-secondary"
+                                               value="{{ old('username') }}" placeholder="username (3-30 karakter, huruf/angka)">
                                     </div>
                                 </div>
                                 <div>
