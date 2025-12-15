@@ -11,7 +11,7 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained()->cascadeOnDelete();
             $table->string('email');
-            $table->enum('type', ['register', 'password_reset']);
+            $table->enum('type', ['register', 'password_reset', 'login_mfa']);
             $table->string('code_hash');
             $table->unsignedTinyInteger('attempts')->default(0);
             $table->timestamp('expires_at');

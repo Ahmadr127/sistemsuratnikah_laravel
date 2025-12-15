@@ -140,27 +140,36 @@
                             <td class="px-4 py-4 text-sm text-gray-500">
                                 <div class="flex items-center">
                                     <i class="fas fa-clock text-gray-400 mr-2"></i>
-                                    {{ $marriage->created_at->format('d M Y H:i') }}
+                                    {{ $marriage->created_at->format('d M Y H:i') }} WIB
                                 </div>
                             </td>
                             <td class="px-4 py-4">
                                 <div class="flex items-center justify-center space-x-2">
-                                    <a href="#" 
+                                    <a href="{{ route('admin.marriage.show', $marriage->id) }}" 
                                        class="inline-flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all duration-300 transform hover:scale-110" 
                                        title="Lihat Detail">
                                         <i class="fas fa-eye text-sm"></i>
                                     </a>
-                                    <a href="#" 
+                                    <a href="{{ route('admin.marriage.print', $marriage->id) }}" 
+                                       class="inline-flex items-center justify-center w-8 h-8 bg-green-100 text-green-600 rounded-lg hover:bg-green-600 hover:text-white transition-all duration-300 transform hover:scale-110" 
+                                       title="Print PDF"
+                                       target="_blank">
+                                        <i class="fas fa-print text-sm"></i>
+                                    </a>
+                                    <a href="{{ route('admin.marriage.edit', $marriage->id) }}" 
                                        class="inline-flex items-center justify-center w-8 h-8 bg-amber-100 text-amber-600 rounded-lg hover:bg-amber-600 hover:text-white transition-all duration-300 transform hover:scale-110" 
                                        title="Edit">
                                         <i class="fas fa-edit text-sm"></i>
                                     </a>
-                                    <a href="#" 
-                                       class="inline-flex items-center justify-center w-8 h-8 bg-red-100 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition-all duration-300 transform hover:scale-110" 
-                                       title="Hapus"
-                                       onclick="return confirm('Apakah Anda yakin ingin menghapus data pernikahan ini?')">
-                                        <i class="fas fa-trash text-sm"></i>
-                                    </a>
+                                    <form action="{{ route('admin.marriage.delete', $marriage->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data pernikahan ini?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                           class="inline-flex items-center justify-center w-8 h-8 bg-red-100 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition-all duration-300 transform hover:scale-110" 
+                                           title="Hapus">
+                                            <i class="fas fa-trash text-sm"></i>
+                                        </button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>

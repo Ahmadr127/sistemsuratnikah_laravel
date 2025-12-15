@@ -185,4 +185,69 @@ class KtpApiService
             'completion_date' => $ktpData['tanggal_selesai'],
         ];
     }
+
+    /**
+     * Update marital status for a person by NIK
+     * 
+     * @param string $nik The NIK to update
+     * @param string $maritalStatus The new marital status (e.g., "Kawin", "Belum Kawin")
+     * @return array Response with success status and message
+     */
+    public function updateMaritalStatus($nik, $maritalStatus = 'Kawin')
+    {
+        try {
+            // Validate NIK format
+            if (!$this->validateNik($nik)) {
+                return [
+                    'success' => false,
+                    'message' => 'Format NIK tidak valid. NIK harus berupa 16 digit angka.'
+                ];
+            }
+
+            // Prepare data to update
+            $data = [
+                'status_perkawinan' => $maritalStatus
+            ];
+
+            // Try PATCH request first (RESTful standard for partial updates)
+            $response = Http::timeout($this->timeout)
+                ->patch($this->baseUrl . '/nik/' . $nik, $data);
+            
+            // If PATCH is not supported, try PUT
+            if ($response->status() === 405) {
+                $response = Http::timeout($this->timeout)
+                    ->put($this->baseUrl . '/nik/' . $nik, $data);
+            }
+
+            if ($response->successful()) {
+                $responseData = $response->json();
+                
+                if (isset($responseData['success']) && $responseData['success']) {
+                    Log::info("KTP marital status updated for NIK: {$nik} to {$maritalStatus}");
+                    return [
+                        'success' => true,
+                        'message' => $responseData['message'] ?? 'Status perkawinan berhasil diperbarui'
+                    ];
+                } else {
+                    Log::warning("KTP API returned unsuccessful response for NIK: {$nik}");
+                    return [
+                        'success' => false,
+                        'message' => $responseData['message'] ?? 'Gagal memperbarui status perkawinan'
+                    ];
+                }
+            } else {
+                Log::error("KTP API update failed for NIK: {$nik}. Status: " . $response->status());
+                return [
+                    'success' => false,
+                    'message' => 'Gagal mengakses API KTP. Status: ' . $response->status()
+                ];
+            }
+        } catch (\Exception $e) {
+            Log::error("KTP API Error - UpdateMaritalStatus for NIK {$nik}: " . $e->getMessage());
+            return [
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat memperbarui status perkawinan: ' . $e->getMessage()
+            ];
+        }
+    }
 }

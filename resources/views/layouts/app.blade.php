@@ -141,7 +141,7 @@
     @yield('styles')
 </head>
 
-<body>
+<body class="flex flex-col min-h-screen">
     <!-- Navigation -->
     <nav x-data="{ isScrolled: false, isOpen: false }" class="fixed w-full top-0 z-50 transition-all duration-300"
         :class="{ 'bg-gradient-to-r from-primary to-secondary shadow-lg': true, 'py-2': isScrolled, 'py-4': !isScrolled }"
@@ -277,9 +277,8 @@
                 </div>
             </div>
     </nav>
-
-    <!-- Main Content -->
-    <main>
+    <!-- Main Content with flex-1 to push footer down -->
+    <main class="flex-1">
         @yield('content')
     </main>
 

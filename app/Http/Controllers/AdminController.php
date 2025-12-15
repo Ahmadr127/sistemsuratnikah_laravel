@@ -221,7 +221,7 @@ class AdminController extends Controller
             session()->forget('marriage_data');
 
             return redirect()->route('admin.marriages')
-                ->with('success', 'Buku nikah berhasil dibuat untuk ' . $marriage->groom_name . ' dan ' . $marriage->bride_name . '.');
+                ->with('success', 'Buku nikah berhasil dibuat untuk ' . $marriage->groom_name . ' dan ' . $marriage->bride_name . '. Data pernikahan tersimpan di database.');
 
         } catch (\Exception $e) {
             return redirect()->back()
@@ -284,5 +284,100 @@ class AdminController extends Controller
                 ->withErrors(['nik' => $apiResponse['message']])
                 ->withInput();
         }
+    }
+
+    /**
+     * Show marriage detail
+     */
+    public function showMarriage($id)
+    {
+        $marriage = Marriage::with('createdBy')->findOrFail($id);
+        return view('admin.marriage.show', compact('marriage'));
+    }
+
+    /**
+     * Show edit form for marriage
+     */
+    public function editMarriage($id)
+    {
+        $marriage = Marriage::findOrFail($id);
+        return view('admin.marriage.edit', compact('marriage'));
+    }
+
+    /**
+     * Update marriage data
+     */
+    public function updateMarriage(Request $request, $id)
+    {
+        $marriage = Marriage::findOrFail($id);
+
+        $validator = Validator::make($request->all(), [
+            'marriage_date' => 'required|date',
+            'marriage_place' => 'required|string|max:255',
+            'witness1_name' => 'required|string|max:255',
+            'witness2_name' => 'required|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        try {
+            $marriage->update([
+                'marriage_date' => $request->input('marriage_date'),
+                'marriage_place' => $request->input('marriage_place'),
+                'witness1_name' => $request->input('witness1_name'),
+                'witness2_name' => $request->input('witness2_name'),
+            ]);
+
+            return redirect()->route('admin.marriages')
+                ->with('success', 'Data pernikahan berhasil diperbarui.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withErrors(['error' => 'Terjadi kesalahan saat memperbarui data pernikahan.'])
+                ->withInput();
+        }
+    }
+
+    /**
+     * Delete marriage record
+     */
+    public function deleteMarriage($id)
+    {
+        try {
+            $marriage = Marriage::findOrFail($id);
+            $groomName = $marriage->groom_name;
+            $brideName = $marriage->bride_name;
+            
+            $marriage->delete();
+
+            return redirect()->route('admin.marriages')
+                ->with('success', "Data pernikahan {$groomName} dan {$brideName} berhasil dihapus.");
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withErrors(['error' => 'Terjadi kesalahan saat menghapus data pernikahan.']);
+        }
+    }
+
+    /**
+     * Print marriage certificate as PDF
+     */
+    public function printMarriage($id)
+    {
+        $marriage = Marriage::findOrFail($id);
+        
+        // Generate PDF using the same view as user print
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('marriage.print-pdf', compact('marriage'));
+        
+        // Set paper size and orientation
+        $pdf->setPaper('A4', 'portrait');
+        
+        // Generate filename
+        $filename = 'Buku_Nikah_' . $marriage->groom_name . '_' . $marriage->bride_name . '_' . now()->format('Ymd') . '.pdf';
+        
+        // Stream PDF
+        return $pdf->stream($filename);
     }
 }
