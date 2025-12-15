@@ -7,6 +7,7 @@ use App\Models\Marriage;
 use Illuminate\Support\Facades\Auth;
 use App\Services\KtpApiService;
 use Illuminate\Support\Facades\Validator;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class MarriageController extends Controller
 {
@@ -121,5 +122,25 @@ class MarriageController extends Controller
             ->get();
 
         return view('marriage.status', compact('marriages'));
+    }
+
+    public function printPdf($id)
+    {
+        $marriage = Marriage::findOrFail($id);
+        
+        // Check if user is authorized to view this marriage
+        abort_if($marriage->created_by !== Auth::id(), 403, 'Anda tidak memiliki akses ke pengajuan ini.');
+        
+        // Generate PDF
+        $pdf = Pdf::loadView('marriage.print-pdf', compact('marriage'));
+        
+        // Set paper size and orientation
+        $pdf->setPaper('A4', 'portrait');
+        
+        // Generate filename with marriage ID and date
+        $filename = 'Buku_Nikah_' . $marriage->id . '_' . now()->format('Ymd_His') . '.pdf';
+        
+        // Download or stream
+        return $pdf->stream($filename);
     }
 }

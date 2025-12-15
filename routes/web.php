@@ -39,6 +39,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/marriage/search-nik', [MarriageController::class, 'searchNik'])->name('marriage.search-nik');
     Route::post('/marriage/request', [MarriageController::class, 'submitRequest'])->name('marriage.submit');
     Route::get('/marriage/status', [MarriageController::class, 'status'])->name('marriage.status');
+    Route::get('/marriage/print/{id}', [MarriageController::class, 'printPdf'])->name('marriage.print');
 });
 
 // Admin Routes
