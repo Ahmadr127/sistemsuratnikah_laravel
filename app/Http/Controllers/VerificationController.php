@@ -44,7 +44,7 @@ class VerificationController extends Controller
     {
         $type = $request->query('type');
         $email = $request->query('email');
-        abort_unless(in_array($type, [VerificationCode::TYPE_REGISTER, VerificationCode::TYPE_PASSWORD_RESET], true), 404);
+        abort_unless(in_array($type, [VerificationCode::TYPE_REGISTER, VerificationCode::TYPE_PASSWORD_RESET, 'login_mfa'], true), 404);
         abort_unless($email && filter_var($email, FILTER_VALIDATE_EMAIL), 404);
         return view('auth.verify-pin', compact('type', 'email'));
     }
@@ -53,7 +53,7 @@ class VerificationController extends Controller
     {
         $data = $request->validate([
             'email' => ['required', 'email'],
-            'type' => ['required', 'in:register,password_reset'],
+            'type' => ['required', 'in:register,password_reset,login_mfa'],
             'pin' => ['required', 'digits:4'],
         ]);
 

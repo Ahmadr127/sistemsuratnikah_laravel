@@ -1,6 +1,7 @@
 # 📋 Analisis Code - Sistem Surat Nikah Laravel
 
 ## 🎯 Ringkasan Aplikasi
+
 **Sistem Surat Nikah** adalah aplikasi berbasis Laravel untuk mengelola pendaftaran pernikahan dengan integrasi KTP API. Aplikasi ini memungkinkan user biasa untuk mengajukan pernikahan dan admin untuk mengelola data pernikahan serta data KTP.
 
 ---
@@ -8,18 +9,20 @@
 ## 🏗️ Arsitektur Aplikasi
 
 ### **Stack Teknologi**
-- **Framework**: Laravel (PHP)
-- **Database**: SQL (MySQL/PostgreSQL)
-- **Frontend**: Blade Template + HTML/CSS/JavaScript
-- **API Integration**: KTP API (eksternal)
-- **Authentication**: Laravel Auth + PIN Verification
-- **Roles**: Admin & User
+
+-   **Framework**: Laravel (PHP)
+-   **Database**: SQL (MySQL/PostgreSQL)
+-   **Frontend**: Blade Template + HTML/CSS/JavaScript
+-   **API Integration**: KTP API (eksternal)
+-   **Authentication**: Laravel Auth + PIN Verification
+-   **Roles**: Admin & User
 
 ---
 
 ## 📊 Database Schema
 
 ### **Tabel Users**
+
 ```
 - id (PK)
 - name (string)
@@ -33,6 +36,7 @@
 ```
 
 ### **Tabel Marriages**
+
 ```
 - id (PK)
 - groom_nik (16 digits)
@@ -48,6 +52,7 @@
 ```
 
 ### **Tabel Verification Codes**
+
 ```
 - id (PK)
 - user_id (FK, nullable)
@@ -61,6 +66,7 @@
 ```
 
 ### **Tabel KTP Data**
+
 ```
 - id (PK)
 - ktp_id (eksternal API ID)
@@ -81,6 +87,7 @@
 ## 🔐 Authentication Flow
 
 ### **1️⃣ Registrasi**
+
 ```
 User Input
   ↓
@@ -106,6 +113,7 @@ Redirect ke Home (/)
 ```
 
 ### **2️⃣ Login**
+
 ```
 User Input
   ↓
@@ -125,6 +133,7 @@ Redirect back with error
 ```
 
 ### **3️⃣ Lupa Password (PIN-based Reset)**
+
 ```
 User klik "Lupa Password"
   ↓
@@ -160,36 +169,42 @@ Redirect ke login dengan success message
 ## 🎭 Role-Based Access
 
 ### **Middleware: AdminMiddleware**
+
 ```php
 if (!auth()->check()) → Redirect ke login
 if (!auth()->user()->isAdmin()) → Abort 403 (Forbidden)
 ```
 
 ### **User (role='user')**
+
 ✅ Akses:
-- `/` (home)
-- `/marriage/request` - Ajukan pernikahan
-- `/marriage/search-nik` - Cari NIK via KTP API
-- `/marriage/status` - Lihat status pernikahan
-- `/login`, `/register`, `/logout`
-- `/forgot-password`, `/verify-pin`, `/reset-password`
+
+-   `/` (home)
+-   `/marriage/request` - Ajukan pernikahan
+-   `/marriage/search-nik` - Cari NIK via KTP API
+-   `/marriage/status` - Lihat status pernikahan
+-   `/login`, `/register`, `/logout`
+-   `/forgot-password`, `/verify-pin`, `/reset-password`
 
 ### **Admin (role='admin')**
+
 ✅ Akses:
-- Semua akses user
-- `/admin/dashboard` - Dashboard admin
-- `/admin/users` - Kelola user
-- `/admin/marriages` - Kelola pernikahan
-- `/admin/marriage/create` - Buat pernikahan baru
-- `/admin/marriage/search-nik` - Cari NIK (admin)
-- `/admin/ktp-data` - Lihat data KTP
-- `/admin/home-settings/edit` - Edit home settings
+
+-   Semua akses user
+-   `/admin/dashboard` - Dashboard admin
+-   `/admin/users` - Kelola user
+-   `/admin/marriages` - Kelola pernikahan
+-   `/admin/marriage/create` - Buat pernikahan baru
+-   `/admin/marriage/search-nik` - Cari NIK (admin)
+-   `/admin/ktp-data` - Lihat data KTP
+-   `/admin/home-settings/edit` - Edit home settings
 
 ---
 
 ## 🛣️ Route Mapping
 
 ### **Public Routes (Guest)**
+
 ```
 GET  /                              → HomeController::index()
 GET  /login                         → View auth.auth
@@ -206,6 +221,7 @@ POST /logout                        → AuthController::logout()
 ```
 
 ### **User Routes (Authenticated)**
+
 ```
 GET  /marriage/request              → MarriageController::showRequestForm()
 POST /marriage/search-nik           → MarriageController::searchNik()
@@ -214,6 +230,7 @@ GET  /marriage/status               → MarriageController::status()
 ```
 
 ### **Admin Routes (Authenticated + AdminMiddleware)**
+
 ```
 GET  /admin/dashboard               → AdminController::dashboard()
 GET  /admin/users                   → AdminController::users()
@@ -235,6 +252,7 @@ POST /admin/home-settings/update    → AdminHomeSettingController::update()
 ### **1. AuthController**
 
 #### `register(Request $request)`
+
 ```
 Input: name, username, email, password, gender
 ↓
@@ -257,6 +275,7 @@ Return: redirect to /verify-pin
 ```
 
 #### `login(Request $request)`
+
 ```
 Input: email (bisa email atau username), password
 ↓
@@ -271,6 +290,7 @@ Hash::check(password)?
 ```
 
 #### `logout(Request $request)`
+
 ```
 Auth::logout()
 ↓
@@ -284,6 +304,7 @@ Redirect ke '/'
 ### **2. VerificationController**
 
 #### `sendResetPin(Request $request)` → TYPE_PASSWORD_RESET
+
 ```
 Input: email
 ↓
@@ -300,6 +321,7 @@ Redirect ke /verify-pin dengan type=password_reset
 ```
 
 #### `verifyPin(Request $request)`
+
 ```
 Input: email, type (register/password_reset), pin
 ↓
@@ -325,6 +347,7 @@ Jika type = 'password_reset':
 ```
 
 #### `resetPassword(Request $request)` → TYPE_PASSWORD_RESET
+
 ```
 Input: password, password_confirmation
 ↓
@@ -340,6 +363,7 @@ Redirect ke login dengan success
 ### **3. MarriageController** (User)
 
 #### `searchNik(Request $request)`
+
 ```
 Input: groom_nik, bride_nik (16 digit)
 ↓
@@ -365,6 +389,7 @@ Redirect ke /marriage/request dengan success
 ```
 
 #### `submitRequest(Request $request)`
+
 ```
 Input: Semua detail pernikahan + saksi
   - groom_name, groom_nik, groom_birth_date, ...
@@ -384,6 +409,7 @@ Redirect ke /marriage/status dengan success
 ```
 
 #### `status()`
+
 ```
 Ambil marriage data user:
   Marriage::where('created_by', auth()->id())->get()
@@ -396,6 +422,7 @@ Return view dengan marriage status
 ### **4. AdminController**
 
 #### `dashboard()`
+
 ```
 Hitung stats:
 - total_users = User::count()
@@ -411,6 +438,7 @@ Return view admin.dashboard
 ```
 
 #### `users()` & `marriages()`
+
 ```
 users():
   $users = User::paginate(10)
@@ -422,6 +450,7 @@ marriages():
 ```
 
 #### `searchNik(Request $request)` → Admin Version
+
 ```
 Sama seperti MarriageController::searchNik()
 BUT:
@@ -433,6 +462,7 @@ Redirect ke /admin/marriage/create-form
 ```
 
 #### `createMarriageForm()`
+
 ```
 Ambil session marriage_data
 ↓
@@ -442,6 +472,7 @@ Return view admin.marriage.form dengan prefill data
 ```
 
 #### `storeMarriage(Request $request)`
+
 ```
 Sama seperti MarriageController::submitRequest()
 BUT:
@@ -452,6 +483,7 @@ Redirect ke /admin/marriages
 ```
 
 #### `ktpData()` & `searchKtp()`
+
 ```
 ktpData():
   Call KtpApiService::getAllKtp()
@@ -469,6 +501,7 @@ searchKtp():
 ### **5. KtpApiService**
 
 #### `getKtpByNik($nik)`
+
 ```
 Validasi format NIK (16 digit)
 ↓
@@ -493,6 +526,7 @@ Return formatted response array
 ```
 
 #### `validateKtpForMarriage($ktpData)`
+
 ```
 Check:
 1. Umur >= 19 tahun?
@@ -509,6 +543,7 @@ Return:
 ```
 
 #### `formatKtpForMarriage($ktpData)`
+
 ```
 Transform KTP API response ke format form:
 {
@@ -523,6 +558,7 @@ Transform KTP API response ke format form:
 ```
 
 #### `getAllKtp()`
+
 ```
 HTTP::get("base_url/all")
 ↓
@@ -534,6 +570,7 @@ Parse dan return semua data KTP dari API
 ## 📱 View Structure
 
 ### **Guest/Public Views**
+
 ```
 resources/views/
 ├── welcome.blade.php           ← Homepage
@@ -548,6 +585,7 @@ resources/views/
 ```
 
 ### **User Views**
+
 ```
 └── marriage/
     ├── request-form.blade.php  ← Form ajukan pernikahan
@@ -555,6 +593,7 @@ resources/views/
 ```
 
 ### **Admin Views**
+
 ```
 └── admin/
     ├── dashboard.blade.php
@@ -570,6 +609,7 @@ resources/views/
 ```
 
 ### **Layout**
+
 ```
 └── layouts/
     ├── app.blade.php           ← Default layout
@@ -581,6 +621,7 @@ resources/views/
 ## 🔄 Key Data Flow Diagrams
 
 ### **Complete Marriage Registration Flow (User)**
+
 ```
 1. User Login
    ↓
@@ -613,6 +654,7 @@ resources/views/
 ```
 
 ### **KTP API Integration Flow**
+
 ```
 MarriageController / AdminController
   ↓
@@ -641,40 +683,45 @@ Controller return status & data ke view
 ## 🔐 Security Features
 
 ### **1. Authentication & Authorization**
-- ✅ Hash password (bcrypt)
-- ✅ Session management
-- ✅ Role-based access (User vs Admin)
-- ✅ AdminMiddleware untuk protected routes
-- ✅ 'auth' middleware untuk authenticated users
-- ✅ 'guest' middleware untuk login/register
+
+-   ✅ Hash password (bcrypt)
+-   ✅ Session management
+-   ✅ Role-based access (User vs Admin)
+-   ✅ AdminMiddleware untuk protected routes
+-   ✅ 'auth' middleware untuk authenticated users
+-   ✅ 'guest' middleware untuk login/register
 
 ### **2. PIN Verification**
-- ✅ 4-digit PIN generate random
-- ✅ Hash PIN dengan bcrypt
-- ✅ 10 menit expiration
-- ✅ Max 5 attempts
-- ✅ consumed_at flag untuk prevent reuse
-- ✅ Email delivery
+
+-   ✅ 4-digit PIN generate random
+-   ✅ Hash PIN dengan bcrypt
+-   ✅ 10 menit expiration
+-   ✅ Max 5 attempts
+-   ✅ consumed_at flag untuk prevent reuse
+-   ✅ Email delivery
 
 ### **3. Input Validation**
-- ✅ Server-side validation di setiap route
-- ✅ NIK format: exactly 16 digits
-- ✅ Email format validation
-- ✅ Password minimum 8 chars
-- ✅ Username alphanumeric
-- ✅ Custom error messages (Indonesia)
+
+-   ✅ Server-side validation di setiap route
+-   ✅ NIK format: exactly 16 digits
+-   ✅ Email format validation
+-   ✅ Password minimum 8 chars
+-   ✅ Username alphanumeric
+-   ✅ Custom error messages (Indonesia)
 
 ### **4. Data Protection**
-- ✅ Password hashed sebelum store
-- ✅ PIN hashed sebelum store
-- ✅ Sensitive data di 'hidden' array
-- ✅ Mass assignment protection via $fillable
+
+-   ✅ Password hashed sebelum store
+-   ✅ PIN hashed sebelum store
+-   ✅ Sensitive data di 'hidden' array
+-   ✅ Mass assignment protection via $fillable
 
 ### **5. API Security**
-- ✅ Timeout 30 seconds
-- ✅ Error logging
-- ✅ Graceful error handling
-- ✅ Validation sebelum API call
+
+-   ✅ Timeout 30 seconds
+-   ✅ Error logging
+-   ✅ Graceful error handling
+-   ✅ Validation sebelum API call
 
 ---
 
@@ -700,24 +747,25 @@ KtpData
 
 ## 🎯 Key Features Summary
 
-| Feature | User | Admin |
-|---------|------|-------|
-| Registration | ✅ | ✅ |
-| Login | ✅ | ✅ |
-| Forgot Password (PIN) | ✅ | ✅ |
-| Request Marriage | ✅ | ❌ |
-| View Marriage Status | ✅ | ❌ |
-| Create Marriage | ❌ | ✅ |
-| Manage Marriages | ❌ | ✅ |
-| Manage Users | ❌ | ✅ |
-| View KTP Data | ❌ | ✅ |
-| Home Settings | ❌ | ✅ |
+| Feature               | User | Admin |
+| --------------------- | ---- | ----- |
+| Registration          | ✅   | ✅    |
+| Login                 | ✅   | ✅    |
+| Forgot Password (PIN) | ✅   | ✅    |
+| Request Marriage      | ✅   | ❌    |
+| View Marriage Status  | ✅   | ❌    |
+| Create Marriage       | ❌   | ✅    |
+| Manage Marriages      | ❌   | ✅    |
+| Manage Users          | ❌   | ✅    |
+| View KTP Data         | ❌   | ✅    |
+| Home Settings         | ❌   | ✅    |
 
 ---
 
 ## 🚀 How to Use
 
 ### **1. Register as User**
+
 ```
 GET /register → Input form → POST /register
 ↓
@@ -725,6 +773,7 @@ Verify PIN via email → Redirect home (auto login)
 ```
 
 ### **2. Request Marriage (as User)**
+
 ```
 GET /marriage/request
 ↓
@@ -740,6 +789,7 @@ GET /marriage/status → View status
 ```
 
 ### **3. Manage Marriage (as Admin)**
+
 ```
 GET /admin/marriage/create
 ↓

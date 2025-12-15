@@ -14,7 +14,8 @@
 
 ## 🔧 FILES CHANGED
 
-### **1. Controller** 
+### **1. Controller**
+
 ```
 📄 app/Http/Controllers/MarriageController.php
 
@@ -27,6 +28,7 @@ ADDED:
 ```
 
 ### **2. Routes**
+
 ```
 📄 routes/web.php
 
@@ -37,6 +39,7 @@ ADDED:
 ```
 
 ### **3. View - Status Page**
+
 ```
 📄 resources/views/marriage/status.blade.php
 
@@ -47,6 +50,7 @@ ADDED:
 ```
 
 ### **4. View - PDF Template** (NEW)
+
 ```
 📄 resources/views/marriage/print-pdf.blade.php
 
@@ -58,6 +62,7 @@ ADDED:
 ```
 
 ### **5. Setup Scripts** (NEW)
+
 ```
 📄 install-pdf.bat (Windows)
 📄 install-pdf.sh (Linux/Mac)
@@ -69,6 +74,7 @@ ADDED:
 ```
 
 ### **6. Documentation** (NEW)
+
 ```
 📄 SETUP_PRINT_PDF.md - Detailed setup guide
 📄 README_PRINT_PDF.md - Quick reference
@@ -80,6 +86,7 @@ ADDED:
 ## 📦 INSTALLATION COMMAND
 
 ### **Option 1: Auto (Recommended)**
+
 ```bash
 # Windows
 install-pdf.bat
@@ -89,6 +96,7 @@ install-pdf.bat
 ```
 
 ### **Option 2: Manual**
+
 ```bash
 composer require barryvdh/laravel-dompdf
 php artisan vendor:publish --provider="Barryvdh\DomPDF\ServiceProvider"
@@ -179,29 +187,31 @@ User dapat:
 
 ## 📐 TECHNICAL SPECS
 
-| Aspect | Detail |
-|--------|--------|
-| **Library** | DomPDF (barryvdh/laravel-dompdf) |
-| **Paper Size** | A4 |
-| **Orientation** | Portrait |
-| **Font** | Times New Roman |
-| **Color Scheme** | Maroon #8B0000 + White |
-| **Margins** | 20mm all sides |
-| **Format** | HTML/CSS-based |
-| **Security** | User authorization check |
-| **Output** | Stream to browser |
-| **Filename** | Buku_Nikah_{id}_{timestamp}.pdf |
+| Aspect           | Detail                           |
+| ---------------- | -------------------------------- |
+| **Library**      | DomPDF (barryvdh/laravel-dompdf) |
+| **Paper Size**   | A4                               |
+| **Orientation**  | Portrait                         |
+| **Font**         | Times New Roman                  |
+| **Color Scheme** | Maroon #8B0000 + White           |
+| **Margins**      | 20mm all sides                   |
+| **Format**       | HTML/CSS-based                   |
+| **Security**     | User authorization check         |
+| **Output**       | Stream to browser                |
+| **Filename**     | Buku*Nikah*{id}\_{timestamp}.pdf |
 
 ---
 
 ## 💻 CODE REFERENCE
 
 ### **Import**
+
 ```php
 use Barryvdh\DomPDF\Facade\Pdf;
 ```
 
 ### **Generate & Stream**
+
 ```php
 $pdf = Pdf::loadView('marriage.print-pdf', compact('marriage'));
 $pdf->setPaper('A4', 'portrait');
@@ -209,12 +219,14 @@ return $pdf->stream('filename.pdf');
 ```
 
 ### **Route**
+
 ```php
 Route::get('/marriage/print/{id}', [MarriageController::class, 'printPdf'])
      ->name('marriage.print');
 ```
 
 ### **Link in View**
+
 ```blade
 <a href="{{ route('marriage.print', $marriage->id) }}" target="_blank">
     <i class="fas fa-file-pdf"></i> Print
@@ -243,14 +255,14 @@ Route::get('/marriage/print/{id}', [MarriageController::class, 'printPdf'])
 
 ## 📊 METRICS
 
-| Metric | Value |
-|--------|-------|
-| Installation Time | ~5-10 minutes |
-| PDF Generation Time | 250-500ms (first time) |
-| File Size | ~50-100KB per PDF |
-| Browser Compatibility | All modern browsers |
-| Mobile Support | Yes (responsive) |
-| Print Quality | 300 DPI equivalent |
+| Metric                | Value                  |
+| --------------------- | ---------------------- |
+| Installation Time     | ~5-10 minutes          |
+| PDF Generation Time   | 250-500ms (first time) |
+| File Size             | ~50-100KB per PDF      |
+| Browser Compatibility | All modern browsers    |
+| Mobile Support        | Yes (responsive)       |
+| Print Quality         | 300 DPI equivalent     |
 
 ---
 
@@ -303,6 +315,7 @@ http://localhost:8000/marriage/print/1
 ## ⚡ TIPS & TRICKS
 
 ### **Make It Faster**
+
 ```php
 // Cache template parsing
 Cache::remember('pdf_template', 3600, function() {
@@ -311,38 +324,41 @@ Cache::remember('pdf_template', 3600, function() {
 ```
 
 ### **Add Logo**
+
 ```html
-<img src="{{ asset('images/logo.png') }}" alt="Logo" style="width: 80px;">
+<img src="{{ asset('images/logo.png') }}" alt="Logo" style="width: 80px;" />
 ```
 
 ### **Custom Fonts**
+
 ```css
 @font-face {
-    font-family: 'CustomFont';
-    src: url('/fonts/custom.ttf') format('truetype');
+    font-family: "CustomFont";
+    src: url("/fonts/custom.ttf") format("truetype");
 }
-body { font-family: 'CustomFont'; }
+body {
+    font-family: "CustomFont";
+}
 ```
 
 ### **Watermark**
+
 ```html
-<div style="position: fixed; top: 50%; opacity: 0.1;">
-    DRAFT
-</div>
+<div style="position: fixed; top: 50%; opacity: 0.1;">DRAFT</div>
 ```
 
 ---
 
 ## 🚨 COMMON ISSUES
 
-| Issue | Solution |
-|-------|----------|
-| Class not found | `composer dump-autoload` |
-| Blank PDF | Check route & DB data |
-| No styling | Use inline CSS, not external |
-| Slow generation | Normal first-time, cache next |
-| Print layout broken | Test with simpler template |
-| Font issues | Use system fonts only |
+| Issue               | Solution                      |
+| ------------------- | ----------------------------- |
+| Class not found     | `composer dump-autoload`      |
+| Blank PDF           | Check route & DB data         |
+| No styling          | Use inline CSS, not external  |
+| Slow generation     | Normal first-time, cache next |
+| Print layout broken | Test with simpler template    |
+| Font issues         | Use system fonts only         |
 
 ---
 
@@ -350,7 +366,7 @@ body { font-family: 'CustomFont'; }
 
 ```
 📄 README_PRINT_PDF.md        ← Overview & quick start
-📄 SETUP_PRINT_PDF.md         ← Detailed setup guide  
+📄 SETUP_PRINT_PDF.md         ← Detailed setup guide
 📄 VISUAL_REFERENCE.md        ← This file (quick ref)
 ```
 
@@ -368,32 +384,33 @@ body { font-family: 'CustomFont'; }
 
 ## ✅ CHECKLIST IMPLEMENTASI
 
-- [x] Controller method added
-- [x] Route configured
-- [x] PDF template created
-- [x] Print button added to UI
-- [x] Authorization implemented
-- [x] Installation scripts created
-- [x] Documentation completed
-- [ ] Install package (TODO - run installer)
-- [ ] Test functionality (TODO - after install)
-- [ ] Customize design (TODO - optional)
+-   [x] Controller method added
+-   [x] Route configured
+-   [x] PDF template created
+-   [x] Print button added to UI
+-   [x] Authorization implemented
+-   [x] Installation scripts created
+-   [x] Documentation completed
+-   [ ] Install package (TODO - run installer)
+-   [ ] Test functionality (TODO - after install)
+-   [ ] Customize design (TODO - optional)
 
 ---
 
 ## 🎓 LEARNING RESOURCES
 
-- DomPDF GitHub: https://github.com/barryvdh/laravel-dompdf
-- Laravel Docs: https://laravel.com/docs
-- CSS for Print: https://www.w3.org/TR/css-print/
-- Font Support: https://dompdf.github.io/
+-   DomPDF GitHub: https://github.com/barryvdh/laravel-dompdf
+-   Laravel Docs: https://laravel.com/docs
+-   CSS for Print: https://www.w3.org/TR/css-print/
+-   Font Support: https://dompdf.github.io/
 
 ---
 
 ## 📞 SUPPORT
 
 For issues or questions:
-1. Check `SETUP_PRINT_PDF.md` 
+
+1. Check `SETUP_PRINT_PDF.md`
 2. Review code comments
 3. Check Laravel error logs
 4. Visit DomPDF GitHub issues
@@ -403,7 +420,7 @@ For issues or questions:
 **Version**: 1.0  
 **Created**: December 15, 2025  
 **Status**: ✅ READY FOR INSTALLATION  
-**Last Updated**: December 15, 2025  
+**Last Updated**: December 15, 2025
 
 ---
 

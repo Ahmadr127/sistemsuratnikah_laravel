@@ -3,34 +3,37 @@
 ## 🎯 Apa yang Sudah Ditambah
 
 ### **1. Controller Method** ✅
+
 **File**: [app/Http/Controllers/MarriageController.php](app/Http/Controllers/MarriageController.php)
 
 ```php
 public function printPdf($id)
 {
     $marriage = Marriage::findOrFail($id);
-    
+
     // Check authorization
     abort_if($marriage->created_by !== Auth::id(), 403);
-    
+
     // Generate PDF
     $pdf = Pdf::loadView('marriage.print-pdf', compact('marriage'));
     $pdf->setPaper('A4', 'portrait');
-    
+
     $filename = 'Buku_Nikah_' . $marriage->id . '_' . now()->format('Ymd_His') . '.pdf';
-    
+
     return $pdf->stream($filename);
 }
 ```
 
 **Features:**
-- Authorization check (user hanya bisa print pengajuan miliknya sendiri)
-- Generate PDF dengan DomPDF
-- A4 Portrait format
-- Filename unik dengan ID dan timestamp
-- Stream langsung (bisa dibuka atau download)
+
+-   Authorization check (user hanya bisa print pengajuan miliknya sendiri)
+-   Generate PDF dengan DomPDF
+-   A4 Portrait format
+-   Filename unik dengan ID dan timestamp
+-   Stream langsung (bisa dibuka atau download)
 
 ### **2. Route Baru** ✅
+
 **File**: [routes/web.php](routes/web.php)
 
 ```php
@@ -39,33 +42,37 @@ Route::get('/marriage/print/{id}', [MarriageController::class, 'printPdf'])
 ```
 
 ### **3. Template PDF Menarik** ✅
+
 **File**: [resources/views/marriage/print-pdf.blade.php](resources/views/marriage/print-pdf.blade.php)
 
 #### **Fitur Template:**
 
 **Design Elements:**
-- 🎨 Warna premium (maroon #8B0000 + putih)
-- 💝 Ornamen dekoratif (✦ ❤ ✦)
-- 📄 A4 portrait layout
-- ✨ Gradient background subtle
-- 🏆 Professional typography
+
+-   🎨 Warna premium (maroon #8B0000 + putih)
+-   💝 Ornamen dekoratif (✦ ❤ ✦)
+-   📄 A4 portrait layout
+-   ✨ Gradient background subtle
+-   🏆 Professional typography
 
 **Content Sections:**
+
 1. **Header** - Logo & judul "BUKU NIKAH"
 2. **Couple Names** - Nama pengantin pria & wanita dengan highlight khusus
 3. **Data Calon Pengantin Pria** - NIK, nama, TTL, alamat
 4. **Data Calon Pengantin Wanita** - NIK, nama, TTL, alamat
 5. **Detail Pernikahan** - Tanggal, tempat, saksi 1 & 2, status
 6. **Signature Section** - Area tanda tangan untuk:
-   - Saksi 1
-   - Saksi 2
-   - Calon Pengantin Pria
-   - Calon Pengantin Wanita
-   - Petugas Pencatat Pernikahan
+    - Saksi 1
+    - Saksi 2
+    - Calon Pengantin Pria
+    - Calon Pengantin Wanita
+    - Petugas Pencatat Pernikahan
 7. **Registration Info** - Nomor pengajuan, tanggal, status
 8. **Footer** - Informasi cetak & disclaimer
 
 **Styling:**
+
 ```css
 - Font: Times New Roman (formal & elegant)
 - Color Scheme: Maroon (#8B0000) + Putih + Abu-abu
@@ -75,12 +82,17 @@ Route::get('/marriage/print/{id}', [MarriageController::class, 'printPdf'])
 ```
 
 ### **4. Button Print di Status Page** ✅
+
 **File**: [resources/views/marriage/status.blade.php](resources/views/marriage/status.blade.php)
 
 Added new column "Aksi" dengan button:
+
 ```html
-<a href="{{ route('marriage.print', $marriage->id) }}" target="_blank"
-   class="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 rounded-md">
+<a
+    href="{{ route('marriage.print', $marriage->id) }}"
+    target="_blank"
+    class="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 rounded-md"
+>
     <i class="fas fa-file-pdf mr-1"></i>
     <span class="text-xs">Print</span>
 </a>
@@ -97,6 +109,7 @@ composer require barryvdh/laravel-dompdf
 ```
 
 **Output yang diharapkan:**
+
 ```
 Installing barryvdh/laravel-dompdf (v2.x.x)
 Using version ^2.0 for barryvdh/laravel-dompdf
@@ -146,6 +159,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 ### **URL Direct:**
 
 Atau langsung akses:
+
 ```
 https://yourapp.com/marriage/print/{marriage_id}
 ```
@@ -240,61 +254,71 @@ Contoh: `https://yourapp.com/marriage/print/5`
 ## 🔒 Security Features
 
 ### **Authorization:**
+
 ```php
 abort_if($marriage->created_by !== Auth::id(), 403);
 ```
-- User hanya bisa print pengajuan mereka sendiri
-- Kalo try akses pengajuan orang lain → Error 403
+
+-   User hanya bisa print pengajuan mereka sendiri
+-   Kalo try akses pengajuan orang lain → Error 403
 
 ### **Data Protection:**
-- Semua data dari database (authenticated)
-- PDF digenerate on-the-fly (tidak disimpan di server)
-- Automatic cleanup
+
+-   Semua data dari database (authenticated)
+-   PDF digenerate on-the-fly (tidak disimpan di server)
+-   Automatic cleanup
 
 ### **Audit Trail:**
-- Filename include ID & timestamp
-- User bisa track waktu print
+
+-   Filename include ID & timestamp
+-   User bisa track waktu print
 
 ---
 
 ## 🎨 Customization Options
 
 ### **1. Ubah Warna**
+
 Di `print-pdf.blade.php`, ganti warna maroon `#8B0000` dengan warna pilihan:
 
 ```css
 .header h1 {
-    color: #0066cc;  /* Biru */
+    color: #0066cc; /* Biru */
 }
 
 .section-title {
-    color: #0066cc;  /* Biru */
+    color: #0066cc; /* Biru */
     border-bottom: 2px solid #0066cc;
 }
 ```
 
 ### **2. Tambah Logo**
+
 ```html
-<img src="{{ asset('images/logo.png') }}" alt="Logo" style="width: 100px;">
+<img src="{{ asset('images/logo.png') }}" alt="Logo" style="width: 100px;" />
 ```
 
 ### **3. Ubah Font**
+
 ```css
 body {
-    font-family: 'Georgia', 'Times New Roman', serif;
+    font-family: "Georgia", "Times New Roman", serif;
 }
 ```
 
 ### **4. Add Watermark**
+
 ```html
-<div style="
+<div
+    style="
     position: fixed;
     top: 50%;
     left: 50%;
     opacity: 0.1;
     font-size: 60px;
     color: #000;
-">
+"
+>
     DRAFT
 </div>
 ```
@@ -303,17 +327,17 @@ body {
 
 ## 📊 Features Added
 
-| Feature | Status | Notes |
-|---------|--------|-------|
-| Generate PDF | ✅ | DomPDF integration |
-| Beautiful Template | ✅ | Professional design |
-| A4 Format | ✅ | Ready to print |
-| Authorization | ✅ | User check |
-| Print Button | ✅ | Status page |
-| Ornaments & Design | ✅ | Maroon + white scheme |
-| Signature Areas | ✅ | 5 signature sections |
-| Registration Info | ✅ | Number, date, status |
-| Date Formatting | ✅ | Indonesian locale |
+| Feature            | Status | Notes                 |
+| ------------------ | ------ | --------------------- |
+| Generate PDF       | ✅     | DomPDF integration    |
+| Beautiful Template | ✅     | Professional design   |
+| A4 Format          | ✅     | Ready to print        |
+| Authorization      | ✅     | User check            |
+| Print Button       | ✅     | Status page           |
+| Ornaments & Design | ✅     | Maroon + white scheme |
+| Signature Areas    | ✅     | 5 signature sections  |
+| Registration Info  | ✅     | Number, date, status  |
+| Date Formatting    | ✅     | Indonesian locale     |
 
 ---
 
@@ -328,24 +352,28 @@ body {
 ## 🐛 Troubleshooting
 
 ### **Error: Class 'Barryvdh\DomPDF\Facade\Pdf' not found**
+
 ```bash
 composer require barryvdh/laravel-dompdf
 composer dump-autoload
 ```
 
 ### **PDF looks broken/empty**
-- Check if view file exists: `resources/views/marriage/print-pdf.blade.php`
-- Check data dalam controller
-- Test dengan simpler template
+
+-   Check if view file exists: `resources/views/marriage/print-pdf.blade.php`
+-   Check data dalam controller
+-   Test dengan simpler template
 
 ### **Styling not showing**
-- DomPDF tidak support semua CSS
-- Use inline styles untuk critical styling
-- Test dengan basic CSS dulu
+
+-   DomPDF tidak support semua CSS
+-   Use inline styles untuk critical styling
+-   Test dengan basic CSS dulu
 
 ### **Font issues**
-- Times New Roman adalah safe font
-- Avoid fancy fonts, gunakan system fonts
+
+-   Times New Roman adalah safe font
+-   Avoid fancy fonts, gunakan system fonts
 
 ---
 
@@ -362,11 +390,13 @@ composer dump-autoload
 ## 📝 Code Reference
 
 ### **Import di Controller:**
+
 ```php
 use Barryvdh\DomPDF\Facade\Pdf;
 ```
 
 ### **Generate & Stream:**
+
 ```php
 $pdf = Pdf::loadView('marriage.print-pdf', compact('marriage'));
 $pdf->setPaper('A4', 'portrait');
@@ -374,11 +404,13 @@ return $pdf->stream('filename.pdf');
 ```
 
 ### **Generate & Download:**
+
 ```php
 return $pdf->download('filename.pdf');
 ```
 
 ### **Save to Disk:**
+
 ```php
 $path = storage_path('pdfs/buku_nikah_' . $marriage->id . '.pdf');
 $pdf->save($path);
@@ -389,10 +421,10 @@ return response()->file($path);
 
 ## 📚 Useful Resources
 
-- DomPDF Docs: https://github.com/barryvdh/laravel-dompdf
-- DomPDF CSS Support: https://dompdf.github.io/
-- Laravel PDF: https://laravel.com/docs/pdf
-- CSS for Print: https://www.w3.org/TR/css-print/
+-   DomPDF Docs: https://github.com/barryvdh/laravel-dompdf
+-   DomPDF CSS Support: https://dompdf.github.io/
+-   Laravel PDF: https://laravel.com/docs/pdf
+-   CSS for Print: https://www.w3.org/TR/css-print/
 
 ---
 
@@ -400,4 +432,3 @@ return response()->file($path);
 **Installation Required**: `composer require barryvdh/laravel-dompdf`  
 **Version**: 1.0  
 **Last Updated**: December 2025
-

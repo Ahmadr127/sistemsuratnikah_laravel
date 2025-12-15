@@ -28,6 +28,7 @@ class VerificationCode extends Model
 
     public const TYPE_REGISTER = 'register';
     public const TYPE_PASSWORD_RESET = 'password_reset';
+    public const TYPE_LOGIN_MFA = 'login_mfa';
 
     public function user()
     {

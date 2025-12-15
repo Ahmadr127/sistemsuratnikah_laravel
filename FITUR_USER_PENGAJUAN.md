@@ -3,11 +3,13 @@
 ## ✅ Status Implementasi Fitur
 
 ### **1. Form Pengajuan Pernikahan** ✅ SUDAH ADA
+
 **File**: [resources/views/marriage/request-form.blade.php](resources/views/marriage/request-form.blade.php)
 
 #### **Proses Pengajuan (2 Tahap)**
 
 **Tahap 1: Verifikasi NIK via API KTP**
+
 ```
 User input:
 - NIK Calon Pengantin Pria (16 digit)
@@ -30,6 +32,7 @@ Proses:
 ```
 
 **Tahap 2: Lengkapi Detail Pernikahan**
+
 ```
 Form fields:
 
@@ -65,6 +68,7 @@ Proses:
 ```
 
 #### **Form Input Fields**
+
 ```
 ┌─────────────────────────────────────────┐
 │ Formulir Pengajuan Buku Nikah           │
@@ -94,6 +98,7 @@ Proses:
 ```
 
 #### **Error Handling**
+
 ```
 - NIK tidak ditemukan di KTP API
   → "Data KTP tidak ditemukan"
@@ -117,9 +122,11 @@ Proses:
 ---
 
 ### **2. History & Status Pengajuan** ✅ SUDAH ADA
+
 **File**: [resources/views/marriage/status.blade.php](resources/views/marriage/status.blade.php)
 
 #### **Halaman Status**
+
 ```
 Route: GET /marriage/status
 Controller: MarriageController::status()
@@ -145,6 +152,7 @@ Proses:
 ```
 
 #### **Status Warna Indikator**
+
 ```
 🟢 ACTIVE (Aktif)       → Status pengajuan sedang berlangsung
 🟡 INACTIVE (Nonaktif)  → Status ditangguhkan
@@ -152,6 +160,7 @@ Proses:
 ```
 
 #### **Informasi yang Ditampilkan**
+
 ```
 Per Baris:
 - No. urut
@@ -162,6 +171,7 @@ Per Baris:
 ```
 
 #### **Fitur Tambahan**
+
 ```
 ✅ Jika ada pengajuan → Tampilkan table dengan data
 ✅ Jika belum ada pengajuan → Tampilkan empty state dengan tombol "Buat Pengajuan Baru"
@@ -178,37 +188,40 @@ Per Baris:
 #### **Yang Diperlukan:**
 
 1. **Controller Method**
-   ```php
-   // Tambah di MarriageController
-   public function print($id)
-   {
-       $marriage = Marriage::find($id);
-       abort_if($marriage->created_by !== Auth::id(), 403);
-       
-       return view('marriage.print', compact('marriage'));
-   }
-   ```
+
+    ```php
+    // Tambah di MarriageController
+    public function print($id)
+    {
+        $marriage = Marriage::find($id);
+        abort_if($marriage->created_by !== Auth::id(), 403);
+
+        return view('marriage.print', compact('marriage'));
+    }
+    ```
 
 2. **Route Baru**
-   ```php
-   Route::get('/marriage/print/{id}', [MarriageController::class, 'print'])
-        ->name('marriage.print');
-   ```
+
+    ```php
+    Route::get('/marriage/print/{id}', [MarriageController::class, 'print'])
+         ->name('marriage.print');
+    ```
 
 3. **View Print**
-   ```
-   resources/views/marriage/print.blade.php
-   - Layout khusus untuk print
-   - Design mirip buku nikah resmi
-   - Include semua data pernikahan
-   - Custom styling untuk A4 paper
-   ```
+
+    ```
+    resources/views/marriage/print.blade.php
+    - Layout khusus untuk print
+    - Design mirip buku nikah resmi
+    - Include semua data pernikahan
+    - Custom styling untuk A4 paper
+    ```
 
 4. **Fitur Print**
-   - Button "Print" di status page
-   - PDF download (optional dengan library dompdf)
-   - Print preview sebelum print
-   - Styling landscape/portrait
+    - Button "Print" di status page
+    - PDF download (optional dengan library dompdf)
+    - Print preview sebelum print
+    - Styling landscape/portrait
 
 ---
 
@@ -252,6 +265,7 @@ Per Baris:
 ## 📊 Data Flow Diagram
 
 ### **Pengajuan Pernikahan**
+
 ```
 ┌──────────────┐
 │ User        │
@@ -299,13 +313,14 @@ Per Baris:
 ## 🎯 Next Steps untuk Implementasi Print
 
 ### **Option 1: Simple HTML Print**
+
 ```php
 // Controller
 public function print($id)
 {
     $marriage = Marriage::findOrFail($id);
     abort_if($marriage->created_by !== Auth::id(), 403);
-    
+
     return view('marriage.print', compact('marriage'));
 }
 ```
@@ -332,6 +347,7 @@ public function print($id)
 ```
 
 ### **Option 2: Generate PDF dengan DomPDF**
+
 ```bash
 composer require barryvdh/laravel-dompdf
 ```
@@ -343,17 +359,20 @@ public function printPdf($id)
 {
     $marriage = Marriage::findOrFail($id);
     abort_if($marriage->created_by !== Auth::id(), 403);
-    
+
     $pdf = Pdf::loadView('marriage.print-pdf', compact('marriage'));
     return $pdf->download('buku_nikah_'.$marriage->id.'.pdf');
 }
 ```
 
 ### **Option 3: Add Print Button di Status Page**
+
 ```html
 <!-- Di status.blade.php -->
-<a href="{{ route('marriage.print', $marriage->id) }}" 
-   class="px-3 py-1 bg-blue-500 text-white rounded">
+<a
+    href="{{ route('marriage.print', $marriage->id) }}"
+    class="px-3 py-1 bg-blue-500 text-white rounded"
+>
     <i class="fas fa-print"></i> Print
 </a>
 ```
@@ -363,47 +382,52 @@ public function printPdf($id)
 ## 📱 Mobile-Friendly Features
 
 ✅ **Request Form**
-- Responsive grid (1 col mobile, 2 col desktop)
-- Touch-friendly input fields
-- Clear error messages
+
+-   Responsive grid (1 col mobile, 2 col desktop)
+-   Touch-friendly input fields
+-   Clear error messages
 
 ✅ **Status Page**
-- Horizontal scroll table untuk mobile
-- Collapsible rows untuk mobile
-- Clear status badges
+
+-   Horizontal scroll table untuk mobile
+-   Collapsible rows untuk mobile
+-   Clear status badges
 
 ---
 
 ## 🔐 Security Checks
 
 ✅ **Authorization**
-- User hanya bisa lihat pengajuan mereka sendiri
-- `where('created_by', Auth::id())`
-- Cek di print juga
+
+-   User hanya bisa lihat pengajuan mereka sendiri
+-   `where('created_by', Auth::id())`
+-   Cek di print juga
 
 ✅ **Input Validation**
-- Server-side validation di semua routes
-- Regex untuk NIK: `^\d{16}$`
-- Required fields
-- Date validation (marriage_date >= today)
+
+-   Server-side validation di semua routes
+-   Regex untuk NIK: `^\d{16}$`
+-   Required fields
+-   Date validation (marriage_date >= today)
 
 ✅ **API Integration**
-- Timeout 30 seconds
-- Error handling & logging
-- Safe data extraction
+
+-   Timeout 30 seconds
+-   Error handling & logging
+-   Safe data extraction
 
 ---
 
 ## 📝 Summary
 
-| Fitur | Status | Lokasi |
-|-------|--------|--------|
-| Form Pengajuan | ✅ DONE | MarriageController, request-form.blade.php |
+| Fitur              | Status  | Lokasi                                       |
+| ------------------ | ------- | -------------------------------------------- |
+| Form Pengajuan     | ✅ DONE | MarriageController, request-form.blade.php   |
 | Verifikasi NIK API | ✅ DONE | KtpApiService, MarriageController::searchNik |
-| Status & History | ✅ DONE | MarriageController::status, status.blade.php |
-| Print Buku Nikah | ❌ TODO | - |
-| PDF Export | ❌ TODO | - |
-| Email Notification | ❌ TODO | - |
+| Status & History   | ✅ DONE | MarriageController::status, status.blade.php |
+| Print Buku Nikah   | ❌ TODO | -                                            |
+| PDF Export         | ❌ TODO | -                                            |
+| Email Notification | ❌ TODO | -                                            |
 
 ---
 
@@ -413,4 +437,3 @@ public function printPdf($id)
 2. **Next**: Email notification ketika status berubah
 3. **Future**: Export ke PDF, QR code, digitally signed
 4. **Nice to have**: Approval workflow untuk admin
-

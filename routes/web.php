@@ -18,6 +18,10 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [AuthController::class, 'register']);
 
+    // Login MFA (PIN verification)
+    Route::get('/login/verify-pin', [AuthController::class, 'showLoginVerifyPin'])->name('login.verify-pin.form');
+    Route::post('/login/verify-pin', [AuthController::class, 'verifyLoginPin'])->name('login.verify-pin');
+
     // Forgot Password (PIN based)
     Route::get('/forgot-password', [VerificationController::class, 'showForgotForm'])->name('forgot.password');
     Route::post('/forgot-password', [VerificationController::class, 'sendResetPin']);
