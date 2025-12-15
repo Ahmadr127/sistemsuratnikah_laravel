@@ -54,7 +54,7 @@
     </div>
 @endif
 
-<div class="max-w-4xl mx-auto">
+<div class="mx-auto">
     <!-- Main Form Card -->
     <div class="bg-white rounded-lg shadow-sm overflow-hidden">
         <!-- Card Header with Gradient -->
