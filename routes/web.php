@@ -40,3 +40,24 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/marriage/request', [MarriageController::class, 'submitRequest'])->name('marriage.submit');
     Route::get('/marriage/status', [MarriageController::class, 'status'])->name('marriage.status');
 });
+
+// Admin Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
+    Route::get('/admin/marriages', [AdminController::class, 'marriages'])->name('admin.marriages');
+    
+    // Marriage Management
+    Route::get('/admin/marriage/create', [AdminController::class, 'createMarriage'])->name('admin.marriage.create');
+    Route::post('/admin/marriage/search-nik', [AdminController::class, 'searchNik'])->name('admin.marriage.search-nik');
+    Route::get('/admin/marriage/create-form', [AdminController::class, 'createMarriageForm'])->name('admin.marriage.create-form');
+    Route::post('/admin/marriage/store', [AdminController::class, 'storeMarriage'])->name('admin.marriage.store');
+    
+    // KTP Data Management
+    Route::get('/admin/ktp-data', [AdminController::class, 'ktpData'])->name('admin.ktp-data');
+    Route::post('/admin/ktp/search', [AdminController::class, 'searchKtp'])->name('admin.ktp.search');
+    
+    // Home Settings
+    Route::get('/admin/home-settings/edit', [AdminHomeSettingController::class, 'edit'])->name('admin.home-settings.edit');
+    Route::post('/admin/home-settings/update', [AdminHomeSettingController::class, 'update'])->name('admin.home-settings.update');
+});
