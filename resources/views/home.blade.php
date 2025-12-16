@@ -10,7 +10,9 @@
             <div class="lg:w-1/2 space-y-6" data-animate>
                 <h1 class="text-5xl font-bold animate-fade-in-up">{{ $data['title'] }}</h1>
                 <p class="text-xl animate-fade-in-up" style="animation-delay: 200ms">{{ $data['subtitle'] }}</p>
-                <p class="text-lg opacity-90 animate-fade-in-up" style="animation-delay: 400ms">KUCING HILANG.</p>
+                <p class="text-lg opacity-90 animate-fade-in-up" style="animation-delay: 400ms">Sistem ADALAH ADALAH digital terdepan
+                    untuk membuat buku nikah dengan verifikasi NIK
+                    real-time. Proses yang mudah, cepat, dan aman untuk pernikahan Anda.</p>
 
                 <!-- NIK Search Form -->
                 <div class="bg-white/10 p-6 rounded-xl backdrop-blur-sm animate-fade-in-up"
