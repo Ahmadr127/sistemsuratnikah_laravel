@@ -290,7 +290,7 @@
                     <h5 class="text-xl font-bold flex items-center">
                         <i class="fas fa-heart mr-2"></i>Buku Nikah Digital
                     </h5>
-                    <p class="mt-3 text-gray-300">Sistem digital untuk membuat buku nikah HARIMAU dengan mudah, cepat, dan
+                    <p class="mt-3 text-gray-300">Sistem digital untuk membuat buku nikah dengan mudah, cepat, dan
                         terpercaya.</p>
                 </div>
                 <div class="md:text-right">
