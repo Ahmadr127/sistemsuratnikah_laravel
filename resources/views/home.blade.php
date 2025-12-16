@@ -295,60 +295,84 @@
 </section>
 
 <!-- KUA Locations Section -->
-<section id="locations" class="min-h-screen flex items-center py-16">
+<section id="locations" class="min-h-screen flex items-center py-16 bg-gradient-to-b from-gray-50 to-white">
     <div class="container mx-auto px-4">
         <div class="text-center mb-12">
             <h2 class="text-4xl font-bold mb-4">Lokasi KUA</h2>
-            <p class="text-xl text-gray-600">Kantor Urusan Agama Kecamatan Ciawi</p>
+            <p class="text-xl text-gray-600">Kantor Urusan Agama di wilayah kami</p>
         </div>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <!-- Location Info Card -->
-            <div
-                class="bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-all duration-300">
-                <div class="p-8">
-                    <div class="flex items-center mb-6">
-                        <i class="fas fa-mosque text-3xl text-primary mr-4"></i>
-                        <h5 class="text-2xl font-semibold">KANTOR URUSAN AGAMA CIAWI</h5>
-                    </div>
-                    <div class="space-y-4 text-gray-600">
-                        <p class="flex items-start text-lg">
-                            <i class="fas fa-map-marker-alt w-8 text-primary mt-1"></i>
-                            <span>Km.65.5 No, Jl. Raya Puncak No.76, Bendungan, Kec. Ciawi, Kabupaten Bogor, Jawa Barat
-                                16720</span>
-                        </p>
-                        <p class="flex items-center text-lg">
-                            <i class="fas fa-phone w-8 text-primary"></i>
-                            <span>(0251) 8242239</span>
-                        </p>
-                        <p class="flex items-center text-lg">
-                            <i class="fas fa-envelope w-8 text-primary"></i>
-                            <span>kua.ciawi@kemenag.go.id</span>
-                        </p>
-                        <p class="flex items-center text-lg">
-                            <i class="fas fa-clock w-8 text-primary"></i>
-                            <span>Senin - Jumat: 08:00 - 16:00 WIB</span>
-                        </p>
-                    </div>
-                    <div class="mt-8">
-                        <a href="https://www.google.com/maps/dir//Kantor+Urusan+Agama+Kecamatan+Ciawi/@-6.6587222,106.8492878,17z/data=!4m5!4m4!1m0!1m2!1m1!1s0x2e69c86c2bc3e607:0x8062e1ad04f1145"
-                            class="inline-flex items-center px-6 py-3 bg-primary text-white rounded-lg hover:bg-opacity-90 transition-all duration-300 transform hover:scale-105"
-                            target="_blank">
-                            <i class="fas fa-directions mr-2"></i>Petunjuk Arah ke Lokasi
-                        </a>
+
+        @if($kuas->count() > 0)
+        <div class="space-y-12">
+            @foreach($kuas as $index => $kua)
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 {{ $index % 2 == 1 ? 'lg:flex-row-reverse' : '' }}">
+                <!-- Location Info Card -->
+                <div
+                    class="bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-all duration-300 {{ $index % 2 == 1 ? 'lg:order-2' : '' }}">
+                    <div class="p-8">
+                        <div class="flex items-center mb-6">
+                            <i class="fas fa-mosque text-3xl text-primary mr-4"></i>
+                            <h5 class="text-2xl font-semibold">{{ $kua->name }}</h5>
+                        </div>
+                        <div class="space-y-4 text-gray-600">
+                            <p class="flex items-start text-lg">
+                                <i class="fas fa-map-marker-alt w-8 text-primary mt-1"></i>
+                                <span>{{ $kua->address }}</span>
+                            </p>
+                            @if($kua->phone)
+                            <p class="flex items-center text-lg">
+                                <i class="fas fa-phone w-8 text-primary"></i>
+                                <span>{{ $kua->phone }}</span>
+                            </p>
+                            @endif
+                            @if($kua->email)
+                            <p class="flex items-center text-lg">
+                                <i class="fas fa-envelope w-8 text-primary"></i>
+                                <span>{{ $kua->email }}</span>
+                            </p>
+                            @endif
+                            @if($kua->operating_hours)
+                            <p class="flex items-center text-lg">
+                                <i class="fas fa-clock w-8 text-primary"></i>
+                                <span>{{ $kua->operating_hours }}</span>
+                            </p>
+                            @endif
+                        </div>
+                        @if($kua->google_maps_link)
+                        <div class="mt-8">
+                            <a href="{{ $kua->google_maps_link }}"
+                                class="inline-flex items-center px-6 py-3 bg-primary text-white rounded-lg hover:bg-opacity-90 transition-all duration-300 transform hover:scale-105"
+                                target="_blank">
+                                <i class="fas fa-directions mr-2"></i>Petunjuk Arah ke Lokasi
+                            </a>
+                        </div>
+                        @endif
                     </div>
                 </div>
-            </div>
 
-            <!-- Google Maps Embed -->
-            <div
-                class="rounded-xl shadow-lg overflow-hidden h-[500px] transform hover:-translate-y-2 transition-all duration-300">
-                <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3963.112368648966!2d106.84928777494558!3d-6.658722193339006!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69c86c2bc3e607%3A0x8062e1ad04f1145!2sKantor%20Urusan%20Agama%20Kecamatan%20Ciawi!5e0!3m2!1sid!2sid!4v1696259882815!5m2!1sid!2sid"
-                    width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
-                    referrerpolicy="no-referrer-when-downgrade" class="transition-all duration-300 hover:opacity-90">
-                </iframe>
+                <!-- Google Maps Embed -->
+                @if($kua->google_maps_embed)
+                <div
+                    class="rounded-xl shadow-lg overflow-hidden h-[500px] transform hover:-translate-y-2 transition-all duration-300 {{ $index % 2 == 1 ? 'lg:order-1' : '' }}">
+                    <iframe
+                        src="{{ $kua->google_maps_embed }}"
+                        width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade" class="transition-all duration-300 hover:opacity-90">
+                    </iframe>
+                </div>
+                @endif
             </div>
+            @if(!$loop->last)
+            <hr class="my-12 border-gray-200">
+            @endif
+            @endforeach
         </div>
+        @else
+        <div class="text-center py-12">
+            <i class="fas fa-mosque text-6xl text-gray-300 mb-4"></i>
+            <p class="text-xl text-gray-500">Belum ada data KUA yang tersedia.</p>
+        </div>
+        @endif
     </div>
 </section>
 

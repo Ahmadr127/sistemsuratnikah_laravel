@@ -70,4 +70,15 @@ Route::middleware(['auth'])->group(function () {
     // Home Settings
     Route::get('/admin/home-settings/edit', [AdminHomeSettingController::class, 'edit'])->name('admin.home-settings.edit');
     Route::post('/admin/home-settings/update', [AdminHomeSettingController::class, 'update'])->name('admin.home-settings.update');
+    
+    // KUA Management
+    Route::resource('/admin/kuas', App\Http\Controllers\Admin\KuaController::class)->names([
+        'index' => 'admin.kuas.index',
+        'create' => 'admin.kuas.create',
+        'store' => 'admin.kuas.store',
+        'show' => 'admin.kuas.show',
+        'edit' => 'admin.kuas.edit',
+        'update' => 'admin.kuas.update',
+        'destroy' => 'admin.kuas.destroy',
+    ]);
 });

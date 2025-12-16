@@ -150,6 +150,16 @@
                         </div>
                     </a>
 
+                    <a href="{{ route('admin.kuas.index') }}" 
+                        class="group flex items-center px-4 py-3 text-white/90 rounded-xl transition-all duration-300 {{ request()->routeIs('admin.kuas.*') ? 'bg-white/20 shadow-lg shadow-blue-500/20' : 'hover:bg-white/10' }}">
+                        <div class="flex items-center flex-1">
+                            <div class="bg-white/10 w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-300 group-hover:scale-110 {{ request()->routeIs('admin.kuas.*') ? 'bg-white/20' : '' }}">
+                                <i class="fas fa-mosque text-lg"></i>
+                            </div>
+                            <span class="ml-3 font-medium">Kelola KUA</span>
+                        </div>
+                    </a>
+
                     <a href="{{ route('admin.home-settings.edit') }}" 
                         class="group flex items-center px-4 py-3 text-white/90 rounded-xl transition-all duration-300 {{ request()->routeIs('admin.home-settings.edit') ? 'bg-white/20 shadow-lg shadow-blue-500/20' : 'hover:bg-white/10' }}">
                         <div class="flex items-center flex-1">

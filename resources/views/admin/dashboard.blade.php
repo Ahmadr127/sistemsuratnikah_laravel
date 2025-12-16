@@ -298,6 +298,15 @@
                 </div>
             </a>
 
+            <a href="{{ route('admin.kuas.index') }}"
+                class="group relative overflow-hidden flex items-center justify-center px-6 py-4 bg-gradient-to-br from-teal-50 to-cyan-50 border-2 border-teal-200 text-teal-700 rounded-xl hover:border-teal-500 hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+                <div class="absolute inset-0 bg-gradient-to-br from-teal-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div class="relative z-10 flex items-center group-hover:text-white transition-colors duration-300">
+                    <i class="fas fa-mosque text-xl mr-3"></i>
+                    <span class="font-semibold">Kelola KUA</span>
+                </div>
+            </a>
+
             <a href="#"
                 class="group relative overflow-hidden flex items-center justify-center px-6 py-4 bg-gradient-to-br from-gray-50 to-slate-50 border-2 border-gray-200 text-gray-700 rounded-xl hover:border-gray-500 hover:shadow-lg transition-all duration-300 transform hover:scale-105">
                 <div class="absolute inset-0 bg-gradient-to-br from-gray-500 to-slate-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
