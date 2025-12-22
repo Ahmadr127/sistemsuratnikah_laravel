@@ -4,17 +4,67 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\File;
 
 class KtpApiService
 {
     private $baseUrl;
     private $timeout;
+    private $useMockData;
+    private $mockDataPath;
 
     public function __construct()
     {
         // Load from config/env for flexibility
         $this->baseUrl = rtrim(config('services.ktp_api.base_url', env('KTP_API_BASE_URL', 'https://ktp.chasouluix.biz.id/api/ktp')), '/');
         $this->timeout = (int) config('services.ktp_api.timeout', (int) env('KTP_API_TIMEOUT', 30));
+        $this->useMockData = filter_var(env('KTP_USE_MOCK_DATA', false), FILTER_VALIDATE_BOOLEAN);
+        $this->mockDataPath = database_path('data/ktp_mock_data.json');
+    }
+
+    /**
+     * Check if using mock data mode
+     */
+    public function isUsingMockData(): bool
+    {
+        return $this->useMockData;
+    }
+
+    /**
+     * Load mock data from JSON file
+     */
+    private function loadMockData(): array
+    {
+        if (!File::exists($this->mockDataPath)) {
+            Log::warning('Mock KTP data file not found: ' . $this->mockDataPath);
+            return [];
+        }
+
+        $content = File::get($this->mockDataPath);
+        $data = json_decode($content, true);
+        
+        return $data['data'] ?? [];
+    }
+
+    /**
+     * Save mock data to JSON file
+     */
+    private function saveMockData(array $allData): bool
+    {
+        try {
+            $content = json_encode([
+                'success' => true,
+                'message' => 'Mock KTP data untuk testing',
+                'total' => count($allData),
+                'data' => $allData
+            ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+
+            File::put($this->mockDataPath, $content);
+            return true;
+        } catch (\Exception $e) {
+            Log::error('Failed to save mock data: ' . $e->getMessage());
+            return false;
+        }
     }
 
     /**
@@ -22,6 +72,17 @@ class KtpApiService
      */
     public function getAllKtp()
     {
+        // Use mock data if enabled
+        if ($this->useMockData) {
+            $mockData = $this->loadMockData();
+            return [
+                'success' => true,
+                'data' => $mockData,
+                'total' => count($mockData),
+                'message' => 'Data KTP (Mock Mode) berhasil diambil'
+            ];
+        }
+
         try {
             $response = Http::timeout($this->timeout)->get($this->baseUrl . '/all');
             
@@ -67,16 +128,36 @@ class KtpApiService
      */
     public function getKtpByNik($nik)
     {
-        try {
-            // Validate NIK format
-            if (!$this->validateNik($nik)) {
+        // Validate NIK format first
+        if (!$this->validateNik($nik)) {
+            return [
+                'success' => false,
+                'data' => null,
+                'message' => 'Format NIK tidak valid. NIK harus berupa 16 digit angka.'
+            ];
+        }
+
+        // Use mock data if enabled
+        if ($this->useMockData) {
+            $mockData = $this->loadMockData();
+            $found = collect($mockData)->firstWhere('nik', $nik);
+            
+            if ($found) {
+                return [
+                    'success' => true,
+                    'data' => $found,
+                    'message' => 'Data KTP (Mock Mode) ditemukan'
+                ];
+            } else {
                 return [
                     'success' => false,
                     'data' => null,
-                    'message' => 'Format NIK tidak valid. NIK harus berupa 16 digit angka.'
+                    'message' => 'Data KTP tidak ditemukan untuk NIK: ' . $nik
                 ];
             }
+        }
 
+        try {
             $response = Http::timeout($this->timeout)->get($this->baseUrl . '/nik/' . $nik);
             
             if ($response->successful()) {
@@ -195,28 +276,36 @@ class KtpApiService
      */
     public function updateMaritalStatus($nik, $maritalStatus = 'Kawin')
     {
-        try {
-            // Validate NIK format
-            if (!$this->validateNik($nik)) {
-                return [
-                    'success' => false,
-                    'message' => 'Format NIK tidak valid. NIK harus berupa 16 digit angka.'
-                ];
-            }
+        // Validate NIK format
+        if (!$this->validateNik($nik)) {
+            return [
+                'success' => false,
+                'message' => 'Format NIK tidak valid. NIK harus berupa 16 digit angka.'
+            ];
+        }
 
+        // Use mock data if enabled
+        if ($this->useMockData) {
+            return $this->updateMockMaritalStatus($nik, $maritalStatus);
+        }
+
+        try {
             // Prepare data to update
             $data = [
                 'status_perkawinan' => $maritalStatus
             ];
 
-            // Try PATCH request first (RESTful standard for partial updates)
+            // Use the new API endpoint format: PUT /nik/{nik}/status-perkawinan
             $response = Http::timeout($this->timeout)
-                ->patch($this->baseUrl . '/nik/' . $nik, $data);
+                ->put($this->baseUrl . '/nik/' . $nik . '/status-perkawinan', $data);
             
-            // If PATCH is not supported, try PUT
-            if ($response->status() === 405) {
+            // If not found, try alternative endpoint
+            if ($response->status() === 404 || $response->status() === 405) {
                 $response = Http::timeout($this->timeout)
-                    ->put($this->baseUrl . '/nik/' . $nik, $data);
+                    ->put($this->baseUrl . '/status-perkawinan', [
+                        'nik' => $nik,
+                        'status_perkawinan' => $maritalStatus
+                    ]);
             }
 
             if ($response->successful()) {
@@ -249,5 +338,74 @@ class KtpApiService
                 'message' => 'Terjadi kesalahan saat memperbarui status perkawinan: ' . $e->getMessage()
             ];
         }
+    }
+
+    /**
+     * Update marital status in mock data
+     */
+    private function updateMockMaritalStatus($nik, $maritalStatus)
+    {
+        $mockData = $this->loadMockData();
+        $updated = false;
+
+        foreach ($mockData as &$item) {
+            if ($item['nik'] === $nik) {
+                $item['status_perkawinan'] = $maritalStatus;
+                $updated = true;
+                break;
+            }
+        }
+
+        if ($updated) {
+            $this->saveMockData($mockData);
+            Log::info("Mock KTP marital status updated for NIK: {$nik} to {$maritalStatus}");
+            return [
+                'success' => true,
+                'message' => 'Status perkawinan (Mock Mode) berhasil diperbarui menjadi ' . $maritalStatus
+            ];
+        }
+
+        return [
+            'success' => false,
+            'message' => 'NIK tidak ditemukan dalam mock data: ' . $nik
+        ];
+    }
+
+    /**
+     * Reset marital status to "Belum Kawin" for testing
+     */
+    public function resetMaritalStatus($nik)
+    {
+        return $this->updateMaritalStatus($nik, 'Belum Kawin');
+    }
+
+    /**
+     * Reset all mock data marital status to "Belum Kawin" (for testing)
+     */
+    public function resetAllMockMaritalStatus()
+    {
+        if (!$this->useMockData) {
+            return [
+                'success' => false,
+                'message' => 'Fitur ini hanya tersedia dalam mock mode'
+            ];
+        }
+
+        $mockData = $this->loadMockData();
+        $resetCount = 0;
+
+        foreach ($mockData as &$item) {
+            if ($item['status_perkawinan'] === 'Kawin') {
+                $item['status_perkawinan'] = 'Belum Kawin';
+                $resetCount++;
+            }
+        }
+
+        $this->saveMockData($mockData);
+        
+        return [
+            'success' => true,
+            'message' => "Berhasil reset {$resetCount} data ke status 'Belum Kawin'"
+        ];
     }
 }

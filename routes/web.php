@@ -66,6 +66,7 @@ Route::middleware(['auth'])->group(function () {
     // KTP Data Management
     Route::get('/admin/ktp-data', [AdminController::class, 'ktpData'])->name('admin.ktp-data');
     Route::post('/admin/ktp/search', [AdminController::class, 'searchKtp'])->name('admin.ktp-search');
+    Route::post('/admin/ktp/reset-mock', [AdminController::class, 'resetMockData'])->name('admin.ktp-reset-mock');
     
     // Home Settings
     Route::get('/admin/home-settings/edit', [AdminHomeSettingController::class, 'edit'])->name('admin.home-settings.edit');

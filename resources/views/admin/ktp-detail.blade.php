@@ -1,289 +1,253 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
-@section('title', 'Detail KTP - Admin')
+@section('title', 'Detail Data KTP - Admin')
+
+@section('page_title', 'Detail Data KTP')
 
 @section('content')
-<div class="container-fluid py-4">
-    <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2><i class="fas fa-id-card me-2"></i>Detail Data KTP</h2>
-                <div>
-                    <a href="{{ route('admin.ktp-data') }}" class="btn btn-outline-secondary me-2">
-                        <i class="fas fa-arrow-left me-2"></i>Kembali ke Data KTP
-                    </a>
-                    @if($ktpData['status'] === 'selesai' && $ktpData['status_perkawinan'] === 'Belum Kawin')
-                        <a href="{{ route('admin.marriage.create') }}?groom_nik={{ $ktpData['nik'] }}" 
-                           class="btn btn-success">
-                            <i class="fas fa-heart me-2"></i>Buat Pernikahan
-                        </a>
-                    @endif
-                </div>
+<!-- Header Section -->
+<div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <h1 class="text-2xl font-semibold text-gray-800 flex items-center">
+            <div class="bg-gradient-to-br from-blue-500 to-cyan-600 w-12 h-12 rounded-xl flex items-center justify-center mr-3">
+                <i class="fas fa-id-card text-white text-xl"></i>
             </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-lg-8 mx-auto">
-            <!-- Personal Information Card -->
-            <div class="card shadow mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">
-                        <i class="fas fa-user me-2"></i>Informasi Pribadi
-                    </h4>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label fw-bold text-muted">NIK</label>
-                                <p class="form-control-plaintext">
-                                    <code class="fs-5">{{ $ktpData['nik'] }}</code>
-                                </p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label fw-bold text-muted">No. Pengajuan</label>
-                                <p class="form-control-plaintext">{{ $ktpData['no_pengajuan'] }}</p>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="mb-3">
-                                <label class="form-label fw-bold text-muted">Nama Lengkap</label>
-                                <p class="form-control-plaintext fs-5">
-                                    <strong>{{ $ktpData['nama_lengkap'] }}</strong>
-                                </p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label fw-bold text-muted">Tempat, Tanggal Lahir</label>
-                                <p class="form-control-plaintext">
-                                    {{ $ktpData['tempat_lahir'] }}, {{ \Carbon\Carbon::parse($ktpData['tanggal_lahir'])->format('d F Y') }}
-                                </p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label fw-bold text-muted">Jenis Kelamin</label>
-                                <p class="form-control-plaintext">
-                                    <span class="badge bg-{{ $ktpData['jenis_kelamin'] === 'L' ? 'primary' : 'pink' }}">
-                                        <i class="fas fa-{{ $ktpData['jenis_kelamin'] === 'L' ? 'male' : 'female' }} me-1"></i>
-                                        {{ $ktpData['jenis_kelamin'] === 'L' ? 'Laki-laki' : 'Perempuan' }}
-                                    </span>
-                                </p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label fw-bold text-muted">Golongan Darah</label>
-                                <p class="form-control-plaintext">{{ $ktpData['golongan_darah'] }}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label fw-bold text-muted">Agama</label>
-                                <p class="form-control-plaintext">{{ $ktpData['agama'] }}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label fw-bold text-muted">Status Perkawinan</label>
-                                <p class="form-control-plaintext">
-                                    <span class="badge bg-{{ $ktpData['status_perkawinan'] === 'Belum Kawin' ? 'success' : 'info' }}">
-                                        {{ $ktpData['status_perkawinan'] }}
-                                    </span>
-                                </p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label fw-bold text-muted">Pekerjaan</label>
-                                <p class="form-control-plaintext">{{ $ktpData['pekerjaan'] }}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label fw-bold text-muted">Kewarganegaraan</label>
-                                <p class="form-control-plaintext">{{ $ktpData['kewarganegaraan'] }}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label fw-bold text-muted">No. Telepon</label>
-                                <p class="form-control-plaintext">{{ $ktpData['no_telepon'] }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Address Information Card -->
-            <div class="card shadow mb-4">
-                <div class="card-header bg-info text-white">
-                    <h4 class="mb-0">
-                        <i class="fas fa-map-marker-alt me-2"></i>Informasi Alamat
-                    </h4>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="mb-3">
-                                <label class="form-label fw-bold text-muted">Alamat Lengkap</label>
-                                <p class="form-control-plaintext">
-                                    {{ $ktpData['alamat'] }}, RT {{ $ktpData['rt'] }}/RW {{ $ktpData['rw'] }}
-                                </p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label fw-bold text-muted">Kelurahan/Desa</label>
-                                <p class="form-control-plaintext">{{ $ktpData['kelurahan'] }}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label fw-bold text-muted">Kecamatan</label>
-                                <p class="form-control-plaintext">{{ $ktpData['kecamatan'] }}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label fw-bold text-muted">Kabupaten/Kota</label>
-                                <p class="form-control-plaintext">{{ $ktpData['kabupaten'] }}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label fw-bold text-muted">Provinsi</label>
-                                <p class="form-control-plaintext">{{ $ktpData['provinsi'] }}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label fw-bold text-muted">Kode Pos</label>
-                                <p class="form-control-plaintext">{{ $ktpData['kode_pos'] }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Status Information Card -->
-            <div class="card shadow mb-4">
-                <div class="card-header bg-warning text-white">
-                    <h4 class="mb-0">
-                        <i class="fas fa-info-circle me-2"></i>Status dan Informasi Lainnya
-                    </h4>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label fw-bold text-muted">Status KTP</label>
-                                <p class="form-control-plaintext">
-                                    @php
-                                        $statusClass = match($ktpData['status']) {
-                                            'selesai' => 'success',
-                                            'proses_cetak' => 'warning',
-                                            'verifikasi' => 'info',
-                                            'pending' => 'secondary',
-                                            'ditolak' => 'danger',
-                                            default => 'secondary'
-                                        };
-                                    @endphp
-                                    <span class="badge bg-{{ $statusClass }} fs-6">
-                                        {{ ucfirst(str_replace('_', ' ', $ktpData['status'])) }}
-                                    </span>
-                                </p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label fw-bold text-muted">Tanggal Pengajuan</label>
-                                <p class="form-control-plaintext">
-                                    {{ \Carbon\Carbon::parse($ktpData['tanggal_pengajuan'])->format('d F Y H:i') }}
-                                </p>
-                            </div>
-                        </div>
-                        @if($ktpData['tanggal_selesai'])
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold text-muted">Tanggal Selesai</label>
-                                    <p class="form-control-plaintext">
-                                        {{ \Carbon\Carbon::parse($ktpData['tanggal_selesai'])->format('d F Y H:i') }}
-                                    </p>
-                                </div>
-                            </div>
-                        @endif
-                        @if($ktpData['catatan'])
-                            <div class="col-12">
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold text-muted">Catatan</label>
-                                    <p class="form-control-plaintext">{{ $ktpData['catatan'] }}</p>
-                                </div>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
-
-            <!-- User Information Card -->
-            <div class="card shadow">
-                <div class="card-header bg-secondary text-white">
-                    <h4 class="mb-0">
-                        <i class="fas fa-user-circle me-2"></i>Informasi User
-                    </h4>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label fw-bold text-muted">Nama User</label>
-                                <p class="form-control-plaintext">{{ $ktpData['user_name'] }}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label fw-bold text-muted">Email User</label>
-                                <p class="form-control-plaintext">{{ $ktpData['user_email'] }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <span>Detail Data KTP</span>
+        </h1>
+        <div class="flex gap-3">
+            @if(($ktpData['status'] ?? '') === 'selesai' && ($ktpData['status_perkawinan'] ?? '') === 'Belum Kawin')
+                <a href="{{ route('admin.marriage.create') }}?groom_nik={{ $ktpData['nik'] }}" 
+                   class="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-pink-600 to-rose-700 text-white rounded-xl hover:from-pink-700 hover:to-rose-800 transition-all duration-300 shadow-lg shadow-pink-500/30">
+                    <i class="fas fa-heart mr-2"></i>
+                    <span class="font-medium">Buat Pernikahan</span>
+                </a>
+            @endif
+            <a href="{{ route('admin.ktp-data') }}" 
+               class="inline-flex items-center px-5 py-2.5 bg-white border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-300">
+                <i class="fas fa-arrow-left mr-2"></i>
+                <span class="font-medium">Kembali ke Data KTP</span>
+            </a>
         </div>
     </div>
 </div>
-@endsection
 
-@section('styles')
-<style>
-    .card {
-        border: none;
-        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    }
-    
-    .card-header {
-        background: var(--primary-color) !important;
-    }
-    
-    .bg-pink {
-        background-color: #e91e63 !important;
-    }
-    
-    .form-control-plaintext {
-        font-size: 1rem;
-        line-height: 1.5;
-    }
-    
-    .badge {
-        font-size: 0.875em;
-    }
-    
-    .badge.fs-6 {
-        font-size: 1rem !important;
-    }
-</style>
+<div class="max-w-6xl mx-auto">
+    <!-- Personal Information Card -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 mb-6 overflow-hidden">
+        <div class="bg-gradient-to-r from-blue-50 to-cyan-50 px-6 py-4 border-b border-gray-100">
+            <h3 class="font-semibold text-gray-800 flex items-center">
+                <div class="bg-blue-500 p-2 rounded-lg mr-3">
+                    <i class="fas fa-user text-white"></i>
+                </div>
+                Informasi Pribadi
+            </h3>
+        </div>
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 mb-1">NIK</label>
+                    <p class="text-gray-900 font-mono text-lg font-medium bg-gray-50 px-3 py-2 rounded-lg">{{ $ktpData['nik'] ?? '-' }}</p>
+                </div>
+                @if(!empty($ktpData['no_pengajuan']))
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 mb-1">No. Pengajuan</label>
+                    <p class="text-gray-900">{{ $ktpData['no_pengajuan'] }}</p>
+                </div>
+                @endif
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-500 mb-1">Nama Lengkap</label>
+                    <p class="text-gray-900 text-lg font-semibold">{{ $ktpData['nama_lengkap'] ?? '-' }}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 mb-1">Tempat, Tanggal Lahir</label>
+                    <p class="text-gray-900">
+                        {{ $ktpData['tempat_lahir'] ?? '-' }}, {{ isset($ktpData['tanggal_lahir']) ? \Carbon\Carbon::parse($ktpData['tanggal_lahir'])->format('d F Y') : '-' }}
+                    </p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 mb-1">Jenis Kelamin</label>
+                    <p>
+                        @if(($ktpData['jenis_kelamin'] ?? '') === 'L')
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                <i class="fas fa-male mr-2"></i>Laki-laki
+                            </span>
+                        @else
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-pink-100 text-pink-800">
+                                <i class="fas fa-female mr-2"></i>Perempuan
+                            </span>
+                        @endif
+                    </p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 mb-1">Golongan Darah</label>
+                    <p class="text-gray-900">{{ $ktpData['golongan_darah'] ?? '-' }}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 mb-1">Agama</label>
+                    <p class="text-gray-900">{{ $ktpData['agama'] ?? '-' }}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 mb-1">Status Perkawinan</label>
+                    <p>
+                        @php
+                            $statusPerkawinan = $ktpData['status_perkawinan'] ?? '-';
+                            $statusClass = match($statusPerkawinan) {
+                                'Belum Kawin' => 'bg-green-100 text-green-800',
+                                'Kawin' => 'bg-blue-100 text-blue-800',
+                                'Cerai Hidup' => 'bg-orange-100 text-orange-800',
+                                'Cerai Mati' => 'bg-gray-100 text-gray-800',
+                                default => 'bg-gray-100 text-gray-800'
+                            };
+                        @endphp
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {{ $statusClass }}">
+                            {{ $statusPerkawinan }}
+                        </span>
+                    </p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 mb-1">Pekerjaan</label>
+                    <p class="text-gray-900">{{ $ktpData['pekerjaan'] ?? '-' }}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 mb-1">Kewarganegaraan</label>
+                    <p class="text-gray-900">{{ $ktpData['kewarganegaraan'] ?? '-' }}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 mb-1">No. Telepon</label>
+                    <p class="text-gray-900">{{ $ktpData['no_telepon'] ?? '-' }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Address Information Card -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 mb-6 overflow-hidden">
+        <div class="bg-gradient-to-r from-emerald-50 to-teal-50 px-6 py-4 border-b border-gray-100">
+            <h3 class="font-semibold text-gray-800 flex items-center">
+                <div class="bg-emerald-500 p-2 rounded-lg mr-3">
+                    <i class="fas fa-map-marker-alt text-white"></i>
+                </div>
+                Informasi Alamat
+            </h3>
+        </div>
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-500 mb-1">Alamat Lengkap</label>
+                    <p class="text-gray-900">
+                        {{ $ktpData['alamat'] ?? '-' }}, RT {{ $ktpData['rt'] ?? '-' }}/RW {{ $ktpData['rw'] ?? '-' }}
+                    </p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 mb-1">Kelurahan/Desa</label>
+                    <p class="text-gray-900">{{ $ktpData['kelurahan'] ?? '-' }}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 mb-1">Kecamatan</label>
+                    <p class="text-gray-900">{{ $ktpData['kecamatan'] ?? '-' }}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 mb-1">Kabupaten/Kota</label>
+                    <p class="text-gray-900">{{ $ktpData['kabupaten'] ?? '-' }}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 mb-1">Provinsi</label>
+                    <p class="text-gray-900">{{ $ktpData['provinsi'] ?? '-' }}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 mb-1">Kode Pos</label>
+                    <p class="text-gray-900">{{ $ktpData['kode_pos'] ?? '-' }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Information Card -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 mb-6 overflow-hidden">
+        <div class="bg-gradient-to-r from-amber-500 to-orange-600 px-6 py-4">
+            <h3 class="font-semibold text-white flex items-center">
+                <i class="fas fa-info-circle mr-3 text-xl"></i>
+                Status dan Informasi Lainnya
+            </h3>
+        </div>
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 mb-1">Status KTP</label>
+                    <p>
+                        @php
+                            $status = $ktpData['status'] ?? 'unknown';
+                            $statusConfig = match($status) {
+                                'selesai' => ['class' => 'bg-green-100 text-green-800', 'icon' => 'check-circle', 'label' => 'Selesai'],
+                                'proses_cetak' => ['class' => 'bg-yellow-100 text-yellow-800', 'icon' => 'print', 'label' => 'Proses Cetak'],
+                                'verifikasi' => ['class' => 'bg-blue-100 text-blue-800', 'icon' => 'search', 'label' => 'Verifikasi'],
+                                'pending' => ['class' => 'bg-gray-100 text-gray-800', 'icon' => 'clock', 'label' => 'Pending'],
+                                'ditolak' => ['class' => 'bg-red-100 text-red-800', 'icon' => 'times-circle', 'label' => 'Ditolak'],
+                                default => ['class' => 'bg-gray-100 text-gray-800', 'icon' => 'question-circle', 'label' => ucfirst($status)]
+                            };
+                        @endphp
+                        <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium {{ $statusConfig['class'] }}">
+                            <i class="fas fa-{{ $statusConfig['icon'] }} mr-2"></i>
+                            {{ $statusConfig['label'] }}
+                        </span>
+                    </p>
+                </div>
+                @if(!empty($ktpData['tanggal_pengajuan']))
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 mb-1">Tanggal Pengajuan</label>
+                    <p class="text-gray-900 flex items-center">
+                        <i class="fas fa-calendar text-amber-500 mr-2"></i>
+                        {{ \Carbon\Carbon::parse($ktpData['tanggal_pengajuan'])->format('d F Y, H:i') }} WIB
+                    </p>
+                </div>
+                @endif
+                @if(!empty($ktpData['tanggal_selesai']))
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 mb-1">Tanggal Selesai</label>
+                    <p class="text-gray-900 flex items-center">
+                        <i class="fas fa-calendar-check text-green-500 mr-2"></i>
+                        {{ \Carbon\Carbon::parse($ktpData['tanggal_selesai'])->format('d F Y, H:i') }} WIB
+                    </p>
+                </div>
+                @endif
+                @if(!empty($ktpData['catatan']))
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-500 mb-1">Catatan</label>
+                    <p class="text-gray-900 bg-gray-50 px-4 py-3 rounded-lg">{{ $ktpData['catatan'] }}</p>
+                </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
+    <!-- User Information Card (only show if user data exists) -->
+    @if(!empty($ktpData['user_name']) || !empty($ktpData['user_email']))
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 mb-6 overflow-hidden">
+        <div class="bg-gradient-to-r from-gray-100 to-slate-100 px-6 py-4 border-b border-gray-100">
+            <h3 class="font-semibold text-gray-800 flex items-center">
+                <div class="bg-gray-500 p-2 rounded-lg mr-3">
+                    <i class="fas fa-user-circle text-white"></i>
+                </div>
+                Informasi User
+            </h3>
+        </div>
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                @if(!empty($ktpData['user_name']))
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 mb-1">Nama User</label>
+                    <p class="text-gray-900">{{ $ktpData['user_name'] }}</p>
+                </div>
+                @endif
+                @if(!empty($ktpData['user_email']))
+                <div>
+                    <label class="block text-sm font-medium text-gray-500 mb-1">Email User</label>
+                    <p class="text-gray-900">{{ $ktpData['user_email'] }}</p>
+                </div>
+                @endif
+            </div>
+        </div>
+    </div>
+    @endif
+</div>
 @endsection

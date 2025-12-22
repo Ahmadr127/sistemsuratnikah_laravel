@@ -199,18 +199,75 @@
                         @enderror
                     </div>
 
-                    <!-- Marriage Place -->
-                    <div>
-                        <label for="marriage_place" class="block text-sm font-semibold text-gray-700 mb-2">
-                            <i class="fas fa-map-marker-alt text-violet-500 mr-2"></i>Tempat Pernikahan
+                    <!-- Marriage Place (KUA Dropdown) -->
+                    <div class="relative" x-data="kuaDropdown()">
+                        <label for="marriage_place_search" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-map-marker-alt text-violet-500 mr-2"></i>Tempat Pernikahan (KUA)
                         </label>
-                        <input type="text" 
-                               id="marriage_place" 
-                               name="marriage_place" 
-                               value="{{ old('marriage_place') }}"
-                               placeholder="Masukkan tempat pernikahan"
-                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 transition-all duration-300 @error('marriage_place') border-red-500 @enderror"
-                               required>
+                        
+                        <!-- Hidden input for form submission -->
+                        <input type="hidden" name="marriage_place" id="marriage_place" x-model="selectedValue" required>
+                        
+                        <!-- Custom Searchable Dropdown -->
+                        <div class="relative">
+                            <!-- Search Input / Display -->
+                            <div class="relative">
+                                <input type="text"
+                                       id="marriage_place_search"
+                                       x-model="searchQuery"
+                                       @focus="isOpen = true"
+                                       @click="isOpen = true"
+                                       @input="filterOptions()"
+                                       :placeholder="selectedText || '-- Pilih Tempat Pernikahan (KUA) --'"
+                                       :class="{'text-gray-900': selectedValue, 'text-gray-500': !selectedValue}"
+                                       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 transition-all duration-300 pr-10 @error('marriage_place') border-red-500 @enderror"
+                                       autocomplete="off">
+                                
+                                <!-- Dropdown Arrow / Clear Button -->
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 space-x-1">
+                                    <button type="button" 
+                                            x-show="selectedValue"
+                                            @click.stop="clearSelection()"
+                                            class="text-gray-400 hover:text-gray-600 transition-colors">
+                                        <i class="fas fa-times text-sm"></i>
+                                    </button>
+                                    <button type="button" 
+                                            @click="isOpen = !isOpen"
+                                            class="text-gray-400 hover:text-gray-600 transition-colors">
+                                        <i class="fas fa-chevron-down text-sm transition-transform duration-200" :class="{'rotate-180': isOpen}"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Dropdown Options -->
+                            <div x-show="isOpen" 
+                                 x-transition:enter="transition ease-out duration-200"
+                                 x-transition:enter-start="opacity-0 transform -translate-y-2"
+                                 x-transition:enter-end="opacity-100 transform translate-y-0"
+                                 x-transition:leave="transition ease-in duration-150"
+                                 x-transition:leave-start="opacity-100 transform translate-y-0"
+                                 x-transition:leave-end="opacity-0 transform -translate-y-2"
+                                 @click.outside="isOpen = false"
+                                 class="absolute z-50 w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-xl max-h-64 overflow-y-auto">
+                                
+                                <!-- No Results -->
+                                <div x-show="filteredOptions.length === 0" 
+                                     class="px-4 py-3 text-gray-500 text-sm text-center">
+                                    <i class="fas fa-search mr-2"></i>Tidak ada KUA ditemukan
+                                </div>
+                                
+                                <!-- Options List -->
+                                <template x-for="(kua, index) in filteredOptions" :key="kua.id">
+                                    <div @click="selectOption(kua)"
+                                         class="px-4 py-3 cursor-pointer hover:bg-violet-50 transition-colors duration-150 border-b border-gray-100 last:border-b-0"
+                                         :class="{'bg-violet-100': selectedValue === kua.name}">
+                                        <div class="font-medium text-gray-800 text-sm" x-text="kua.name"></div>
+                                        <div class="text-xs text-gray-500 mt-1 truncate" x-text="kua.address"></div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                        
                         @error('marriage_place')
                             <p class="text-red-500 text-xs mt-1 flex items-center">
                                 <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
@@ -278,6 +335,58 @@
 
 @section('scripts')
 <script>
+    // KUA Dropdown Component
+    function kuaDropdown() {
+        return {
+            isOpen: false,
+            searchQuery: '',
+            selectedValue: '{{ old('marriage_place', '') }}',
+            selectedText: '',
+            options: @json($kuas->map(fn($kua) => ['id' => $kua->id, 'name' => $kua->name, 'address' => $kua->address])),
+            filteredOptions: [],
+            
+            init() {
+                this.filteredOptions = this.options;
+                // Set initial selected text if value exists
+                if (this.selectedValue) {
+                    const found = this.options.find(o => o.name === this.selectedValue);
+                    if (found) {
+                        this.selectedText = found.name;
+                        this.searchQuery = found.name;
+                    }
+                }
+            },
+            
+            filterOptions() {
+                const query = this.searchQuery.toLowerCase().trim();
+                if (!query) {
+                    this.filteredOptions = this.options;
+                } else {
+                    this.filteredOptions = this.options.filter(option => 
+                        option.name.toLowerCase().includes(query) || 
+                        option.address.toLowerCase().includes(query)
+                    );
+                }
+                this.isOpen = true;
+            },
+            
+            selectOption(kua) {
+                this.selectedValue = kua.name;
+                this.selectedText = kua.name;
+                this.searchQuery = kua.name;
+                this.isOpen = false;
+            },
+            
+            clearSelection() {
+                this.selectedValue = '';
+                this.selectedText = '';
+                this.searchQuery = '';
+                this.filteredOptions = this.options;
+                this.isOpen = false;
+            }
+        }
+    }
+
     // Set minimum date to today
     document.addEventListener('DOMContentLoaded', function() {
         const today = new Date().toISOString().split('T')[0];

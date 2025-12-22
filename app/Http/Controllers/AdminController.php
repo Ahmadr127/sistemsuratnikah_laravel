@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Marriage;
 use App\Models\KtpData;
+use App\Models\Kua;
 use App\Services\KtpApiService;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Http;
@@ -159,7 +160,10 @@ class AdminController extends Controller
                 ->with('error', 'Silakan verifikasi NIK terlebih dahulu.');
         }
 
-        return view('admin.marriage.form', compact('marriageData'));
+        // Get active KUA list for dropdown
+        $kuas = Kua::active()->ordered()->get();
+
+        return view('admin.marriage.form', compact('marriageData', 'kuas'));
     }
 
     /**
@@ -217,11 +221,37 @@ class AdminController extends Controller
                 'created_by' => auth()->id(),
             ]);
 
+            // Update marital status to "Kawin" for both groom and bride
+            $groomUpdateResult = $this->ktpApiService->updateMaritalStatus($marriageData['groom_nik'], 'Kawin');
+            $brideUpdateResult = $this->ktpApiService->updateMaritalStatus($marriageData['bride_nik'], 'Kawin');
+
+            // Build success message
+            $successMessage = 'Buku nikah berhasil dibuat untuk ' . $marriage->groom_name . ' dan ' . $marriage->bride_name . '.';
+            
+            // Add status update info
+            if ($groomUpdateResult['success'] && $brideUpdateResult['success']) {
+                $successMessage .= ' Status perkawinan kedua pihak telah diperbarui menjadi "Kawin".';
+            } else {
+                $statusErrors = [];
+                if (!$groomUpdateResult['success']) {
+                    $statusErrors[] = 'Pria: ' . $groomUpdateResult['message'];
+                }
+                if (!$brideUpdateResult['success']) {
+                    $statusErrors[] = 'Wanita: ' . $brideUpdateResult['message'];
+                }
+                $successMessage .= ' Catatan: Gagal update status perkawinan - ' . implode('; ', $statusErrors);
+            }
+
+            // Add mock mode indicator
+            if ($this->ktpApiService->isUsingMockData()) {
+                $successMessage .= ' [Mock Mode]';
+            }
+
             // Clear session data
             session()->forget('marriage_data');
 
             return redirect()->route('admin.marriages')
-                ->with('success', 'Buku nikah berhasil dibuat untuk ' . $marriage->groom_name . ' dan ' . $marriage->bride_name . '. Data pernikahan tersimpan di database.');
+                ->with('success', $successMessage);
 
         } catch (\Exception $e) {
             return redirect()->back()
@@ -229,6 +259,7 @@ class AdminController extends Controller
                 ->withInput();
         }
     }
+
 
     /**
      * Show all KTP data from API
@@ -283,6 +314,20 @@ class AdminController extends Controller
             return redirect()->back()
                 ->withErrors(['nik' => $apiResponse['message']])
                 ->withInput();
+        }
+    }
+
+    /**
+     * Reset all mock KTP data marital status (for testing)
+     */
+    public function resetMockData()
+    {
+        $result = $this->ktpApiService->resetAllMockMaritalStatus();
+        
+        if ($result['success']) {
+            return redirect()->back()->with('success', $result['message']);
+        } else {
+            return redirect()->back()->with('error', $result['message']);
         }
     }
 
