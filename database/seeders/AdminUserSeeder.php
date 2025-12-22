@@ -16,11 +16,13 @@ class AdminUserSeeder extends Seeder
     {
         // Create admin user (username: admin, password: 123)
         User::updateOrCreate(
-            ['email' => 'alifasulaeman291@gmail.com'],
+            ['email' => 'spasi0123123@gmail.com'],
             [
                 'name' => 'Administrator',
+                'username' => 'admin',
                 'password' => Hash::make('123'),
                 'role' => 'admin',
+                'gender' => 'L',
             ]
         );
 
@@ -29,18 +31,10 @@ class AdminUserSeeder extends Seeder
             ['email' => 'user@bukunikahdigital.com'],
             [
                 'name' => 'User Test',
+                'username' => 'user',
                 'password' => Hash::make('123'),
                 'role' => 'user',
-            ]
-        );
-
-        // Create additional admin user with username 'admin' and password '123'
-        User::updateOrCreate(
-            ['email' => 'admin'],
-            [
-                'name' => 'Admin',
-                'password' => Hash::make('123'),
-                'role' => 'admin',
+                'gender' => 'L',
             ]
         );
     }
