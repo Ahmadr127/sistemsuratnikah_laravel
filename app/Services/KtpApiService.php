@@ -12,6 +12,7 @@ class KtpApiService
     private $timeout;
     private $useMockData;
     private $mockDataPath;
+    private $verifySSL;
 
     public function __construct()
     {
@@ -20,6 +21,27 @@ class KtpApiService
         $this->timeout = (int) config('services.ktp_api.timeout', (int) env('KTP_API_TIMEOUT', 30));
         $this->useMockData = filter_var(env('KTP_USE_MOCK_DATA', false), FILTER_VALIDATE_BOOLEAN);
         $this->mockDataPath = database_path('data/ktp_mock_data.json');
+        // Allow bypassing SSL verification for development (set KTP_VERIFY_SSL=false in .env)
+        $this->verifySSL = filter_var(env('KTP_VERIFY_SSL', true), FILTER_VALIDATE_BOOLEAN);
+    }
+
+    /**
+     * Create configured HTTP client with SSL and timeout settings
+     */
+    private function httpClient()
+    {
+        $client = Http::timeout($this->timeout)
+            ->withHeaders([
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
+            ]);
+        
+        // Disable SSL verification if configured (for development only)
+        if (!$this->verifySSL) {
+            $client = $client->withoutVerifying();
+        }
+        
+        return $client;
     }
 
     /**
@@ -84,7 +106,7 @@ class KtpApiService
         }
 
         try {
-            $response = Http::timeout($this->timeout)->get($this->baseUrl . '/all');
+            $response = $this->httpClient()->get($this->baseUrl . '/all');
             
             if ($response->successful()) {
                 $data = $response->json();
@@ -158,7 +180,7 @@ class KtpApiService
         }
 
         try {
-            $response = Http::timeout($this->timeout)->get($this->baseUrl . '/nik/' . $nik);
+            $response = $this->httpClient()->get($this->baseUrl . '/nik/' . $nik);
             
             if ($response->successful()) {
                 $data = $response->json();
@@ -296,12 +318,12 @@ class KtpApiService
             ];
 
             // Use the new API endpoint format: PUT /nik/{nik}/status-perkawinan
-            $response = Http::timeout($this->timeout)
+            $response = $this->httpClient()
                 ->put($this->baseUrl . '/nik/' . $nik . '/status-perkawinan', $data);
             
             // If not found, try alternative endpoint
             if ($response->status() === 404 || $response->status() === 405) {
-                $response = Http::timeout($this->timeout)
+                $response = $this->httpClient()
                     ->put($this->baseUrl . '/status-perkawinan', [
                         'nik' => $nik,
                         'status_perkawinan' => $maritalStatus

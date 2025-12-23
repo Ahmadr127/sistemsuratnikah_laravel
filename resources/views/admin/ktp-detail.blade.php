@@ -220,6 +220,89 @@
         </div>
     </div>
 
+    <!-- Update Marital Status Card (only show for KTP with status 'selesai') -->
+    @if(($ktpData['status'] ?? '') === 'selesai')
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 mb-6 overflow-hidden">
+        <div class="bg-gradient-to-r from-purple-500 to-indigo-600 px-6 py-4">
+            <h3 class="font-semibold text-white flex items-center">
+                <i class="fas fa-edit mr-3 text-xl"></i>
+                Update Status Perkawinan
+            </h3>
+        </div>
+        <div class="p-6">
+            @if(session('success'))
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 rounded">
+                    <div class="flex items-center">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        <span>{{ session('success') }}</span>
+                    </div>
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-circle mr-2"></i>
+                        <span>{{ session('error') }}</span>
+                    </div>
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded">
+                    <ul class="list-disc list-inside">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <form action="{{ route('admin.ktp-update-marital-status', $ktpData['nik']) }}" method="POST" class="space-y-4">
+                @csrf
+                @method('PUT')
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+                    <div>
+                        <label for="status_perkawinan" class="block text-sm font-medium text-gray-700 mb-2">
+                            Status Perkawinan Baru
+                        </label>
+                        <select name="status_perkawinan" id="status_perkawinan" 
+                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200">
+                            <option value="">-- Pilih Status --</option>
+                            <option value="Belum Kawin" {{ ($ktpData['status_perkawinan'] ?? '') === 'Belum Kawin' ? 'selected' : '' }}>Belum Kawin</option>
+                            <option value="Kawin" {{ ($ktpData['status_perkawinan'] ?? '') === 'Kawin' ? 'selected' : '' }}>Kawin</option>
+                            <option value="Cerai Hidup" {{ ($ktpData['status_perkawinan'] ?? '') === 'Cerai Hidup' ? 'selected' : '' }}>Cerai Hidup</option>
+                            <option value="Cerai Mati" {{ ($ktpData['status_perkawinan'] ?? '') === 'Cerai Mati' ? 'selected' : '' }}>Cerai Mati</option>
+                        </select>
+                    </div>
+                    <div>
+                        <button type="submit" 
+                                class="inline-flex items-center px-6 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-700 text-white rounded-lg hover:from-purple-700 hover:to-indigo-800 transition-all duration-300 shadow-lg shadow-purple-500/30">
+                            <i class="fas fa-save mr-2"></i>
+                            <span class="font-medium">Update Status</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mt-4 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                    <div class="flex items-start">
+                        <i class="fas fa-info-circle text-yellow-500 mt-0.5 mr-3"></i>
+                        <div class="text-sm text-yellow-700">
+                            <p class="font-medium mb-1">Catatan:</p>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li>Perubahan status perkawinan akan dikirim ke API KTP eksternal.</li>
+                                <li>Status valid: <strong>Belum Kawin</strong>, <strong>Kawin</strong>, <strong>Cerai Hidup</strong>, <strong>Cerai Mati</strong>.</li>
+                                <li>Pastikan data sudah benar sebelum mengubah status.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    @endif
+
     <!-- User Information Card (only show if user data exists) -->
     @if(!empty($ktpData['user_name']) || !empty($ktpData['user_email']))
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 mb-6 overflow-hidden">

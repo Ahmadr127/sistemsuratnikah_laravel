@@ -332,6 +332,42 @@ class AdminController extends Controller
     }
 
     /**
+     * Update KTP marital status manually from admin panel
+     * 
+     * Calls the external KTP API to update marital status based on the documentation:
+     * PUT /api/ktp/nik/{nik}/status-perkawinan or PUT /api/ktp/status-perkawinan
+     * 
+     * @param Request $request
+     * @param string $nik
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function updateKtpMaritalStatus(Request $request, $nik)
+    {
+        // Validate request
+        $validator = Validator::make($request->all(), [
+            'status_perkawinan' => 'required|in:Belum Kawin,Kawin,Cerai Hidup,Cerai Mati',
+        ], [
+            'status_perkawinan.required' => 'Status perkawinan wajib dipilih.',
+            'status_perkawinan.in' => 'Status perkawinan harus salah satu dari: Belum Kawin, Kawin, Cerai Hidup, Cerai Mati.',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        // Call the API service to update marital status
+        $result = $this->ktpApiService->updateMaritalStatus($nik, $request->input('status_perkawinan'));
+
+        if ($result['success']) {
+            return redirect()->back()->with('success', $result['message']);
+        } else {
+            return redirect()->back()->with('error', $result['message']);
+        }
+    }
+
+    /**
      * Show marriage detail
      */
     public function showMarriage($id)
